@@ -104,15 +104,11 @@ ngrok http <port-number> -host-header=localhost:<port-number>
  
 1. Sign in with your Office 365 work or school account.
 
-
 1. Choose the **Create subscription** button. The **Subscription** page loads with information about the subscripton.
-
 
 1. Choose the **Watch for notifications** button.
 
-
 1. Send an email to your Office 365 account. The **Notification** page displays information about the message. It may take several seconds for the page to update.
-
 
 1. Choose the **Delete subscription and sign out** button. 
 
@@ -122,23 +118,22 @@ ngrok http <port-number> -host-header=localhost:<port-number>
 The following files contain code that pertains to the main purpose of the sample: creating subscriptions and receiving notifications.
 
 **Controllers**  
-- [```NotificationController.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Receives notifications.  
-- [```SubscriptionContoller.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Creates and receives webhooks subscriptions.
+- [```NotificationController.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Controllers/NotificationController.cs). Receives notifications.  
+- [```SubscriptionContoller.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Controllers/SubscriptionController.cs). Creates and receives webhooks subscriptions.
  
 **Models**  
-- [```Notification.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Represents a change notification. 
-- [```Message.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Represents an Outlook mail message. 
-- [```Subscription.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Represents a webhooks subscription. 
-- [```SubscriptionViewModel.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Represents the data that displays in the Subscription views. 
+- [```Message.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Models/Message.cs). Represents an Outlook mail message. 
+- [```Notification.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Models/Notification.cs). Represents a change notification. 
+- [```Subscription.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Models/Subscription.cs). Represents a webhooks subscription. Also defines the **SubscriptionViewModel** that represents the data displayed in the Subscription view. 
 
 **Views**  
-- [```Notification/Notification.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Displays information about received messages, and contains the **Delete subscription and sign out** button. 
-- [```Subscription/CreateSubscription.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Landing page that contains the **Create subscription** button. 
-- [```Subscription/SubscriptionRequestResponse.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Displays subscription properties, and contains the **Watch for notifications** button. 
+- [```Notification/Notification.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Views/Notification/Notification.cshtml). Displays information about received messages, and contains the **Delete subscription and sign out** button. 
+- [```Subscription/CreateSubscription.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Views/Subscription/Index.cshtml). Landing page that contains the **Create subscription** button. 
+- [```Subscription/SubscriptionRequestResponse.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Views/Subscription/Subscription.cshtml). Displays subscription properties, and contains the **Watch for notifications** button. 
 
 **Other**  
-- [```Web.config```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Contains values used for authentication and authorization. 
-- [```Startup.Auth.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/). Contains code used for authentication and authorization when the app starts.
+- [```Web.config```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Web.config). Contains values used for authentication and authorization. 
+- [```Startup.Auth.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/App_Start/Startup.Auth.cs). Contains code used for authentication and authorization when the app starts.
 
 
 ## Troubleshooting
