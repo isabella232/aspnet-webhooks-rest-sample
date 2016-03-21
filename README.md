@@ -1,13 +1,13 @@
 # Microsoft Graph ASP.NET Webhooks
 
-Subscribe for webhooks to be notified when your user's data changes so you don't have to poll for changes.
+Subscribe for webhooks to get notified when your user's data changes so you don't have to poll for changes.
 
 This sample web application shows how to create webhook subscriptions and receive notifications from the Microsoft Graph.
 
 **Create subscriptions**
 
-- Sign in and authenticate the user. The sample uses [OpenID Connect](https://msdn.microsoft.com/en-us/library/azure/jj573266.aspx) and [Active Directory Authentication Library .NET (v2)](http://go.microsoft.com/fwlink?LinkId=258232) to authenticate and authorize the user.
-- Build and send a `POST /subscriptions` request. The sample subscribes to the `me/mailFolders('Inbox')/messages` resource for `created` changes. 
+- Sign in and authenticate the user. 
+- Build and send a `POST /subscriptions` request. 
 - Return the validation token to confirm the notification URL.  
 - Parse the subscription object.
 
@@ -17,7 +17,7 @@ This sample web application shows how to create webhook subscriptions and receiv
 - Parse the notification object.
 - Use the notification data to get the message that you were notified about. 
 
-The sample gets notifications when the user receives a mail message, and then updates a page with information about the message.
+The sample subscribes to the `me/mailFolders('Inbox')/messages` resource for `created` changes. The sample gets notifications when the user receives a mail message, and then updates a page with information about the message.     
 
 To learn more about Microsoft Graph webhooks, see the [Subscription API](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription). To learn more about using the Microsoft Graph API in an ASP.NET MVC app, see [Call Microsoft Graph in an ASP.NET MVC app](https://graph.microsoft.io/en-us/docs/platform/aspnetmvc).
 
@@ -28,32 +28,22 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * Visual Studio 2015 installed on your development computer. 
 
-* An Office 365 account. You can sign up for an [Office 365 Developer subscription](https://portal.office.com/Signup/Signup.aspx?OfferId=6881A1CB-F4EB-4db3-9F18-388898DAF510&DL=DEVELOPERPACK&ali=1#0) that includes the resources that you need to start building Office 365 apps.
-
->If you already have a subscription, the previous link sends you to a page with the message *Sorry, you can’t add that to your current account*. In that case use an account from your current Office 365 subscription.
-
-* A Microsoft Azure tenant to register your application. Azure Active Directory (AAD) provides identity services that applications use for authentication and authorization. If you don't already have a tenant, you can [sign up for a trial subscription.](https://account.windowsazure.com/SignUp). 
-
->Important: Your Azure subscription must be bound to your Office 365 tenant. To do this, see [Manage the directory for your Office 365 subscription in Azure](https://azure.microsoft.com/en-us/documentation/articles/active-directory-manage-o365-subscription/) or [Associate your Office 365 account with Azure AD to create and manage apps](https://msdn.microsoft.com/office/office365/howto/setup-development-environment#bk_CreateAzureSubscription).
-
-* The client ID and key from the application that you [added to your Azure tenant](https://azure.microsoft.com/en-us/documentation/articles/active-directory-integrating-applications/#adding-an-application) in the Azure Management Portal.
-
 * A public HTTPS endpoint to receive and send HTTP requests. You can use Microsoft Azure or another service to host your endpoint. If you prefer, you can use ngrok (or similar tool) while testing to temporarily allow messages from Microsoft Graph to tunnel to a port on your local computer. [Instructions for setting up ngrok](#ngrok) are included below.
 
+* An Office 365 account. You can sign up for an [Office 365 Developer subscription](https://portal.office.com/Signup/Signup.aspx?OfferId=6881A1CB-F4EB-4db3-9F18-388898DAF510&DL=DEVELOPERPACK&ali=1#0) that includes the resources that you need to start building Office 365 apps.
 
-### Configure your Azure application
+   >If you already have a subscription, the previous link sends you to a page with the message *Sorry, you can’t add that to your current account*. In that case use an account from your current Office 365 subscription.
 
-1. Use *https://localhost:44300/* as the sign-on and reply URLs. 
+* The client ID and key from the application that you added to an Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies app registration. Use the following parameters:
 
-2. Choose a duration in the **keys** section to generate a key. You'll be able to copy the key after you save your changes to the application.
-
-   ![Generating a key for the application](readme-images/GenerateKey.PNG)
-
-2. Grant the following delegated permission to the **Microsoft Graph** application: 
-
-   - **Read user mail** (Mail.Read)
- 
-   ![Delegating permissions to Microsoft Graph](readme-images/GrantPermissions.PNG)
+|       Parameter | Value                   |
+|----------------:|:------------------------|
+|        App type | Web App                 |
+|     Sign on URL | https://localhost:44300 |
+|    Redirect URI | https://localhost:44300 |
+| App permissions | Mail.Read               |
+  
+  Copy and store the **Client ID** and **Client Secret** values.
 
 
 <a name="ngrok"></a>
@@ -95,7 +85,7 @@ ngrok http <port-number> -host-header=localhost:<port-number>
 1. In Solution Explorer, open the **Web.config** file in the root directory of the project.  
    a. For the **AppId** key, replace *ENTER_YOUR_CLIENT_ID* with the client ID of your registered Azure application.  
    b. For the **AppSecret** key, replace *ENTER_YOUR_SECRET* with the key of your registered Azure application.  
-   d. For the **NotificationUrl** key, replace *ENTER_YOUR_ENDPOINT* with your HTTPS URL. Keep the */notification/listen* portion. If you're using ngrok, the value will look something like this:
+   d. For the **NotificationUrl** key, replace *ENTER_YOUR_URL* with your HTTPS URL. Keep the */notification/listen* portion. If you're using ngrok, the value will look something like this:
 
    ```xml
 <add key="ida:NotificationUrl" value="https://0f6fd138.ngrok.io/notification/listen" />
@@ -106,7 +96,7 @@ ngrok http <port-number> -host-header=localhost:<port-number>
 
 ### Use the app
  
-1. Sign in with your Office 365 work or school account.
+1. Sign in with your Office 365 work or school account. 
 
 1. Choose the **Create subscription** button. The **Subscription** page loads with information about the subscripton.
 
@@ -137,7 +127,7 @@ The following files contain code that pertains to the main purpose of the sample
 
 **Other**  
 - [```Web.config```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Web.config) Contains values used for authentication and authorization. 
-- [```Startup.Auth.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/App_Start/Startup.Auth.cs) Contains code used for authentication and authorization when the app starts.
+- [```Startup.Auth.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/App_Start/Startup.Auth.cs) Contains code used for authentication and authorization when the app starts. The sample uses [OpenID Connect](https://msdn.microsoft.com/en-us/library/azure/jj573266.aspx) and [Active Directory Authentication Library .NET (v2)](http://go.microsoft.com/fwlink?LinkId=258232) to authenticate and authorize the user.
 
 
 ## Troubleshooting
