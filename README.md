@@ -1,6 +1,6 @@
 # Microsoft Graph ASP.NET Webhooks
 
-Subscribe for webhooks to get notified when your user's data changes so you don't have to poll for changes.
+Subscribe for webhooks to get notified when your user's data changes, so you don't have to poll for changes.
 
 This sample web application shows how to create webhook subscriptions and receive notifications from the Microsoft Graph.
 
@@ -17,9 +17,9 @@ This sample web application shows how to create webhook subscriptions and receiv
 - Parse the notification object.
 - Use the notification data to get the message that you were notified about. 
 
-The sample subscribes to the `me/mailFolders('Inbox')/messages` resource for `created` changes. The sample gets notifications when the user receives a mail message, and then updates a page with information about the message.     
+This sample subscribes to the `me/mailFolders('Inbox')/messages` resource for `created` changes. It gets notified when the user receives a mail message, and then updates a page with information about the message.     
 
-To learn more about Microsoft Graph webhooks, see the [Subscription API](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription). To learn more about using the Microsoft Graph API in an ASP.NET MVC app, see [Call Microsoft Graph in an ASP.NET MVC app](https://graph.microsoft.io/en-us/docs/platform/aspnetmvc).
+To learn more about Microsoft Graph webhooks, see the [Subscription API](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription).
 
 
 ## Prerequisites
@@ -32,18 +32,18 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * An Office 365 account. You can sign up for an [Office 365 Developer subscription](https://portal.office.com/Signup/Signup.aspx?OfferId=6881A1CB-F4EB-4db3-9F18-388898DAF510&DL=DEVELOPERPACK&ali=1#0) that includes the resources that you need to start building Office 365 apps.
 
-   >If you already have a subscription, the previous link sends you to a page with the message *Sorry, you can’t add that to your current account*. In that case use an account from your current Office 365 subscription.
+   >If you already have a subscription, this link sends you to a page with the message *Sorry, you can’t add that to your current account*. In that case, use an account from your current Office 365 subscription.
 
 * The client ID and key from the application that you added to an Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies app registration. Use the following parameters:
 
-   |       Parameter | Value                   |
-   |----------------:|:------------------------|
-   |        App type | Web App                 |
-   |     Sign on URL | https://localhost:44300 |
-   |    Redirect URI | https://localhost:44300 |
-   | App permissions | Mail.Read               |
+   |       Parameter | Value                    |
+   |----------------:|:-------------------------|
+   |        App type | Web App                  |
+   |     Sign on URL | https://localhost:44300/ |
+   |    Redirect URI | https://localhost:44300/ |
+   | App permissions | Mail.Read                |
   
-   Copy and store the **Client ID** and **Client Secret** values.
+   Copy and store the returned **Client ID** and **Client Secret** values. (Or, see how to [register the app manually].)
 
 
 <a name="ngrok"></a>
@@ -102,7 +102,7 @@ ngrok http <port-number> -host-header=localhost:<port-number>
 
 1. Choose the **Watch for notifications** button.
 
-1. Send an email to your Office 365 account. The **Notification** page displays information about the message. It may take several seconds for the page to update.
+1. Send an email to your Office 365 account. The **Notification** page displays some message properties. It may take several seconds for the page to update.
 
 1. Choose the **Delete subscription and sign out** button. 
 
@@ -141,7 +141,7 @@ The following files contain code that pertains to the main purpose of the sample
 
 We'd love to get your feedback about the Microsoft Graph ASP.NET Webhooks sample. You can send your questions and suggestions to us in the [Issues](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/issues) section of this repository.
 
-Questions about the Microsoft Graph or Office 365 in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/Office365+API). Make sure that your questions or comments are tagged with [Office365] and [MicrosoftGraph].
+Questions about the Microsoft Graph or Office 365 in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/Office365+API). Make sure that your questions or comments are tagged with *[Office365]* and *[MicrosoftGraph]*.
 
 You can suggest changes for the Microsoft Graph or Office 365 on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs) or [UserVoice](https://officespdev.uservoice.com/).
   
@@ -150,7 +150,7 @@ You can suggest changes for the Microsoft Graph or Office 365 on [GitHub](https:
 
 * [Microsoft Graph documentation](http://graph.microsoft.io)
 * [Microsoft Graph API Reference](http://graph.microsoft.io/docs/api-reference/v1.0)
-
+* [Call Microsoft Graph in an ASP.NET MVC app](https://graph.microsoft.io/en-us/docs/platform/aspnetmvc)
 
 ## Copyright
 Copyright (c) 2016 Microsoft. All rights reserved.
