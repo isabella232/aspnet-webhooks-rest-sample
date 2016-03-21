@@ -102,7 +102,11 @@ ngrok http <port-number> -host-header=localhost:<port-number>
 
 1. Choose the **Watch for notifications** button.
 
+	![App page showing properties of the new subscription](readme-images/Page2.PNG)
+
 1. Send an email to your Office 365 account. The **Notification** page displays some message properties. It may take several seconds for the page to update.
+   
+	![App page showing properties of the new message](readme-images/Page3.PNG)
 
 1. Choose the **Delete subscription and sign out** button. 
 

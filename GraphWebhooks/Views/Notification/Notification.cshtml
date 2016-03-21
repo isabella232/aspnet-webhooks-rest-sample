@@ -19,7 +19,7 @@ hub.on("showNotification", function (messages) {
         var message = value;                       // Get current message
 
         var table = $("<table></table>");
-        var header = $("<th>Message " + (index + 1) + "</th>").appendTo(table);
+        var header = $("<th>Message</th>").appendTo(table);
 
         for (prop in message) {                    // Iterate through message properties
             var property = message[prop];
