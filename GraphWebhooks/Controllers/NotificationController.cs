@@ -98,9 +98,9 @@ namespace GraphWebhooks.Controllers
             string serviceRootUrl = "https://graph.microsoft.com/v1.0/";
 
             // Get an access token and add it to the client.
-            string authority = string.Format(ConfigurationManager.AppSettings["ida:AADInstance"], "common", "");
+            string authority = string.Format(ConfigurationManager.AppSettings["ida:AADInstance"], "common");
             AuthenticationContext authContext = new AuthenticationContext(authority);
-            ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:AppId"], ConfigurationManager.AppSettings["ida:AppSecret"]);
+            ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientId"], ConfigurationManager.AppSettings["ida:ClientSecret"]);
 
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

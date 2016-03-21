@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
  *  See LICENSE in the source repository root for complete license information.
  */
- 
+
 using System;
 using System.Web;
 using System.Web.Mvc;
@@ -37,9 +37,9 @@ namespace GraphWebhooks.Controllers
             {
                 string userObjId = System.Security.Claims.ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
                 string tenantId = System.Security.Claims.ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
-                string authority = string.Format(ConfigurationManager.AppSettings["ida:AADInstance"], tenantId, "");
+                string authority = string.Format(System.Globalization.CultureInfo.InvariantCulture, ConfigurationManager.AppSettings["ida:AADInstance"], tenantId);
                 AuthenticationContext authContext = new AuthenticationContext(authority, false);
-                ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:AppId"], ConfigurationManager.AppSettings["ida:AppSecret"]);
+                ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientId"], ConfigurationManager.AppSettings["ida:ClientSecret"]);
                 try
                 {
                     authResult = await authContext.AcquireTokenSilentAsync("https://graph.microsoft.com", credential,
@@ -68,10 +68,10 @@ namespace GraphWebhooks.Controllers
             var subscription = new Subscription
             {
                 Resource = "me/mailFolders('Inbox')/messages",
-                ChangeType = "Created",
+                ChangeType = "created",
                 NotificationUrl = ConfigurationManager.AppSettings["ida:NotificationUrl"],
                 ClientState = Guid.NewGuid().ToString(),
-                ExpirationDateTime = DateTime.UtcNow + new TimeSpan(3, 0, 0, 0)
+                //ExpirationDateTime = DateTime.UtcNow + new TimeSpan(3, 0, 0, 0)
             };
 
             string contentString = JsonConvert.SerializeObject(subscription, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
@@ -123,9 +123,9 @@ namespace GraphWebhooks.Controllers
                 {
                     string userObjId = System.Security.Claims.ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
                     string tenantId = System.Security.Claims.ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
-                    string authority = string.Format(ConfigurationManager.AppSettings["ida:AADInstance"], tenantId);
+                    string authority = string.Format(System.Globalization.CultureInfo.InvariantCulture, ConfigurationManager.AppSettings["ida:AADInstance"], tenantId);
                     AuthenticationContext authContext = new AuthenticationContext(authority, false);
-                    ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:AppId"], ConfigurationManager.AppSettings["ida:AppSecret"]);
+                    ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientId"], ConfigurationManager.AppSettings["ida:ClientSecret"]);
                     AuthenticationResult authResult = null;
                     try
                     {

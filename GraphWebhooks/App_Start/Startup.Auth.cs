@@ -1,89 +1,75 @@
-﻿/*
- *  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
- *  See LICENSE in the source repository root for complete license information.
- */
-
+﻿using System;
 using System.Configuration;
+using System.IdentityModel.Claims;
 using System.Threading.Tasks;
-using System.Globalization;
-using System.IdentityModel.Tokens;
-using Owin;
+using System.Web;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Notifications;
 using Microsoft.Owin.Security.OpenIdConnect;
-using Microsoft.IdentityModel.Protocols;
-using ADAL = Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Owin;
 
 namespace GraphWebhooks
 {
     public partial class Startup
     {
-
-        public static string appId = ConfigurationManager.AppSettings["ida:AppId"];
-        public static string appSecret = ConfigurationManager.AppSettings["ida:AppSecret"];
-        public static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+        public string ClientId = ConfigurationManager.AppSettings["ida:ClientId"];
+        public string ClientSecret = ConfigurationManager.AppSettings["ida:ClientSecret"];
+        public string Authority = string.Format(System.Globalization.CultureInfo.InvariantCulture, ConfigurationManager.AppSettings["ida:AADInstance"], "common");
 
         public void ConfigureAuth(IAppBuilder app)
         {
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions());
+            app.UseCookieAuthentication(new CookieAuthenticationOptions { });
 
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
-                    ClientId = appId,
-                    Authority = string.Format(CultureInfo.InvariantCulture, aadInstance, "common"),
-                    PostLogoutRedirectUri = "/",
-                    TokenValidationParameters = new TokenValidationParameters
+                    ClientId = ClientId,
+                    Authority = Authority,
+                    TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
                     {
-                        // For demo purposes only.
+                        // instead of using the default validation (validating against a single issuer value, as we do in line of business apps), 
+                        // we inject our own multitenant validation logic
                         ValidateIssuer = false,
-
-                        // In a real multitenant app, you should add logic to determine whether the caller is from a valid tenant. For example:
-                        //   IssuerValidator = (issuer, token, tvp) =>
-                        //   {
-                        //       if (MyCustomTenantValidation(issuer)) 
-                        //           return issuer;
-                        //       else
-                        //           throw new SecurityTokenInvalidIssuerException("Invalid issuer");
-                        //   },
+                        // If the app needs access to the entire organization, then add the logic
+                        // of validating the Issuer here.
+                        // IssuerValidator
                     },
-                    Notifications = new OpenIdConnectAuthenticationNotifications
+                    Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
-                        AuthenticationFailed = OnAuthenticationFailed,
-                        AuthorizationCodeReceived = OnAuthorizationCodeReceived
+                        // If there is a code in the OpenID Connect response, redeem it for an access token and refresh token, and store those away.
+                        AuthorizationCodeReceived = (context) =>
+                        {
+                            var code = context.Code;
+                            string userObjectId = context.AuthenticationTicket.Identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                            ClientCredential credential = new ClientCredential(ClientId, ClientSecret);
+                            AuthenticationContext authContext = new AuthenticationContext(Authority);
+                            authContext.AcquireTokenByAuthorizationCode(code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, "https://graph.microsoft.com/");
+
+                            return Task.FromResult(0);
+                        },
+                        RedirectToIdentityProvider = (context) =>
+                        {
+                            // This ensures that the address used for sign in and sign out is picked up dynamically from the request.
+                            // This allows you to deploy your app (to Azure Web Sites, for example) without having to change settings
+                            // Remember that the base URL of the address used here must be provisioned in Azure AD beforehand.
+                            string appBaseUrl = context.Request.Scheme + "://" + context.Request.Host + context.Request.PathBase;
+                            context.ProtocolMessage.RedirectUri = appBaseUrl + "/";
+                            context.ProtocolMessage.PostLogoutRedirectUri = appBaseUrl;
+
+                            return Task.FromResult(0);
+                        },
+                        AuthenticationFailed = (context) =>
+                        {
+                            // Suppress the exception if you don't want to see the error.
+                            context.HandleResponse();
+
+                            return Task.FromResult(0);
+                        }
                     }
-                }
-            );
-        }
-
-        private Task OnAuthenticationFailed(AuthenticationFailedNotification<OpenIdConnectMessage,
-          OpenIdConnectAuthenticationOptions> notification)
-            {
-                notification.HandleResponse();
-                notification.Response.Redirect("/Error?message=" + notification.Exception.Message);
-                return Task.FromResult(0);
-            }
-
-        private async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedNotification notification)
-        {
-            // Not used by this sample. Get the user's object id (used to name the token cache).
-            //string userObjId = notification.AuthenticationTicket.Identity
-            //    .FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-
-            // Exchange the auth code for a token.
-            ADAL.ClientCredential clientCred = new ADAL.ClientCredential(appId, appSecret);
-
-            // Create the auth context. This sample uses the default token cache.
-            // Production applications should implement a custom token cache that derives from the TokenCache class.
-            ADAL.AuthenticationContext authContext = new ADAL.AuthenticationContext(
-                string.Format(CultureInfo.InvariantCulture, aadInstance, "common"),
-                false);
-
-            ADAL.AuthenticationResult authResult = await authContext.AcquireTokenByAuthorizationCodeAsync(
-                notification.Code, notification.Request.Uri, clientCred, "https://graph.microsoft.com");
+                });
         }
     }
 }

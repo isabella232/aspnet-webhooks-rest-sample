@@ -1,13 +1,11 @@
-﻿/*
- *  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
- *  See LICENSE in the source repository root for complete license information.
- */
-
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
+using Microsoft.Owin.Security;
 
 namespace GraphWebhooks.Controllers
 {
@@ -15,29 +13,32 @@ namespace GraphWebhooks.Controllers
     {
         public void SignIn()
         {
+            // Send an OpenID Connect sign-in request.
             if (!Request.IsAuthenticated)
             {
-                // Signal OWIN to send an authorization request to Azure
-                HttpContext.GetOwinContext().Authentication.Challenge(
-                  new AuthenticationProperties { RedirectUri = "/" },
-                  OpenIdConnectAuthenticationDefaults.AuthenticationType);
+                HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/" },
+                    OpenIdConnectAuthenticationDefaults.AuthenticationType);
             }
         }
 
         public void SignOut()
         {
+            string callbackUrl = Url.Action("SignOutCallback", "Account", routeValues: null, protocol: Request.Url.Scheme);
+
+            HttpContext.GetOwinContext().Authentication.SignOut(
+                new AuthenticationProperties { RedirectUri = callbackUrl },
+                OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
+        }
+
+        public ActionResult SignOutCallback()
+        {
             if (Request.IsAuthenticated)
             {
-                // Get the user's token cache and clear it
-                string userObjId = System.Security.Claims.ClaimsPrincipal.Current
-                  .FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-
+                // Redirect to home page if the user is authenticated.
+                return RedirectToAction("Index", "Home");
             }
 
-            // Send an OpenID Connect sign-out request. 
-            HttpContext.GetOwinContext().Authentication.SignOut(
-              CookieAuthenticationDefaults.AuthenticationType);
-            Response.Redirect("/");
+            return View();
         }
     }
 }
