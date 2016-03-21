@@ -36,14 +36,14 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * The client ID and key from the application that you added to an Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies app registration. Use the following parameters:
 
-|       Parameter | Value                   |
-|----------------:|:------------------------|
-|        App type | Web App                 |
-|     Sign on URL | https://localhost:44300 |
-|    Redirect URI | https://localhost:44300 |
-| App permissions | Mail.Read               |
+   |       Parameter | Value                   |
+   |----------------:|:------------------------|
+   |        App type | Web App                 |
+   |     Sign on URL | https://localhost:44300 |
+   |    Redirect URI | https://localhost:44300 |
+   | App permissions | Mail.Read               |
   
-  Copy and store the **Client ID** and **Client Secret** values.
+   Copy and store the **Client ID** and **Client Secret** values.
 
 
 <a name="ngrok"></a>
