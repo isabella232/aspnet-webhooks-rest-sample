@@ -26,12 +26,12 @@ namespace GraphWebhooks.Controllers
             return View("Notification");
         }
 
-        // The notificationUrl endpoint that's registered with the webhooks subscription.
+        // The notificationUrl endpoint that's registered with the webhook subscription.
         [HttpPost]
         public async Task<ActionResult> Listen()
         {
 
-            // Validate the new subscription by sending the token back to MS Graph.
+            // Validate the new subscription by sending the token back to Microsoft Graph.
             // This response is required for each subscription.
             if (Request.QueryString["validationToken"] != null)
             {
@@ -78,14 +78,14 @@ namespace GraphWebhooks.Controllers
                             }
                         }
                     }
-                    return new HttpStatusCodeResult(200);
+                    return new HttpStatusCodeResult(202);
                 }
                 catch (Exception)
                 {
 
                     // TODO: Handle the exception.
-                    // Return a 200 so the service doesn't resend the notification.
-                    return new HttpStatusCodeResult(200);
+                    // Return a 202 so the service doesn't resend the notification.
+                    return new HttpStatusCodeResult(202);
                 }
             }
         }

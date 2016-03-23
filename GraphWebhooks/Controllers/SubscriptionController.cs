@@ -26,7 +26,7 @@ namespace GraphWebhooks.Controllers
             return View();
         }
 
-        // Create webhooks subscriptions.
+        // Create webhook subscriptions.
         [Authorize]
         public async Task<ActionResult> CreateSubscription()
         {
@@ -63,7 +63,7 @@ namespace GraphWebhooks.Controllers
 
             // Build the request.
             // This sample subscribes to get notifications when the user receives an email.
-            string subscriptionsEndpoint = "https://graph.microsoft.com/beta/subscriptions/";
+            string subscriptionsEndpoint = "https://graph.microsoft.com/stagingbeta/subscriptions/";
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, subscriptionsEndpoint);
             var subscription = new Subscription
             {
@@ -71,7 +71,7 @@ namespace GraphWebhooks.Controllers
                 ChangeType = "created",
                 NotificationUrl = ConfigurationManager.AppSettings["ida:NotificationUrl"],
                 ClientState = Guid.NewGuid().ToString(),
-                //ExpirationDateTime = DateTime.UtcNow + new TimeSpan(3, 0, 0, 0)
+                ExpirationDateTime = DateTime.UtcNow + new TimeSpan(3, 0, 0, 0)
             };
 
             string contentString = JsonConvert.SerializeObject(subscription, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
@@ -89,8 +89,8 @@ namespace GraphWebhooks.Controllers
                     Subscription = JsonConvert.DeserializeObject<Subscription>(stringResult)
                 };
 
-                // This app temporarily stores the current subscription ID, refreshToken and client state. 
-                // These are required so the NotificationController, which is not authenticated can retrieve an access token keyed from subscription id
+                // This app temporarily stores the current subscription ID, refresh token, and client state. 
+                // These are required so the NotificationController, which is not authenticated, can retrieve an access token keyed from the subscription ID.
                 // Production apps typically use some method of persistent storage.
                 HttpRuntime.Cache.Insert("subscriptionId_" + viewModel.Subscription.Id,
                     Tuple.Create(viewModel.Subscription.ClientState, authResult.RefreshToken), null, DateTime.MaxValue, new TimeSpan(24, 0, 0), System.Web.Caching.CacheItemPriority.NotRemovable, null);
@@ -107,7 +107,7 @@ namespace GraphWebhooks.Controllers
 
         }
 
-        // Delete the current webhooks subscription and sign the user out.
+        // Delete the current webhooks subscription and sign out the user.
         [Authorize]
         public async Task<ActionResult> DeleteSubscription()
         {
@@ -115,7 +115,7 @@ namespace GraphWebhooks.Controllers
 
             if (!string.IsNullOrEmpty(subscriptionId))
             {
-                string serviceRootUrl = "https://graph.microsoft.com/beta/subscriptions/";
+                string serviceRootUrl = "https://graph.microsoft.com/stagingbeta/subscriptions/";
 
                 // Get an access token and add it to the client.
                 string accessToken;

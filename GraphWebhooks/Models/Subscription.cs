@@ -8,15 +8,15 @@ using Newtonsoft.Json;
 
 namespace GraphWebhooks.Models
 {
-    // A webhooks subscription.
+    // A webhook subscription.
     public class Subscription
     {
         // The type of change in the subscribed resource that raises a notification.
         [JsonProperty(PropertyName = "changeType")]
         public string ChangeType { get; set; }
 
-        // The string that MS Graph should send with each notification. Maximum length is 255 characters. 
-        // To verify that the notification is from MS Graph, compare the value received with the notification to the value you sent with the subscription request.
+        // The string that Microsoft Graph should send with each notification. Maximum length is 255 characters. 
+        // To verify that the notification is from Microsoft Graph, compare the value received with the notification to the value you sent with the subscription request.
         [JsonProperty(PropertyName = "clientState")]
         public string ClientState { get; set; }
 
@@ -28,13 +28,13 @@ namespace GraphWebhooks.Models
         [JsonProperty(PropertyName = "resource")]
         public string Resource { get; set; }
 
-        // The date and time when the webhooks subscription expires.
+        // The date and time when the webhook subscription expires.
         // The time is in UTC, and can be up to three days from the time of subscription creation.
-        [JsonProperty(PropertyName = "subscriptionExpirationDateTime")]
+        [JsonProperty(PropertyName = "expirationDateTime")]
         public DateTimeOffset? ExpirationDateTime { get; set; }
 
-        // The unique identifier for the webhooks subscription.
-        [JsonProperty(PropertyName = "subscriptionId")]
+        // The unique identifier for the webhook subscription.
+        [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
     }
 

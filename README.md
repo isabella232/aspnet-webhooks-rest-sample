@@ -1,8 +1,8 @@
 # Microsoft Graph ASP.NET Webhooks
 
-Subscribe for webhooks to get notified when your user's data changes, so you don't have to poll for changes.
+Subscribe for webhooks to get notified when your user's data changes so you don't have to poll for changes.
 
-This sample web application shows how to create webhook subscriptions and receive notifications from the Microsoft Graph.
+This sample web application shows how to create webhook subscriptions and receive notifications from Microsoft Graph.
 
 **Create subscriptions**
 
@@ -28,7 +28,7 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * Visual Studio 2015 installed on your development computer. 
 
-* A public HTTPS endpoint to receive and send HTTP requests. You can use Microsoft Azure or another service to host your endpoint. If you prefer, you can use ngrok (or similar tool) while testing to temporarily allow messages from Microsoft Graph to tunnel to a port on your local computer. [Instructions for setting up ngrok](#ngrok) are included below.
+* A public HTTPS endpoint to receive and send HTTP requests. You can use Microsoft Azure or another service to host your endpoint. If you prefer, you can use ngrok (or a similar tool) while testing to temporarily allow messages from Microsoft Graph to tunnel to a port on your local computer. [Instructions for setting up ngrok](#ngrok) are included below.
 
 * An Office 365 account. You can sign up for an [Office 365 Developer subscription](https://portal.office.com/Signup/Signup.aspx?OfferId=6881A1CB-F4EB-4db3-9F18-388898DAF510&DL=DEVELOPERPACK&ali=1#0) that includes the resources that you need to start building Office 365 apps.
 
@@ -100,9 +100,9 @@ ngrok http <port-number> -host-header=localhost:<port-number>
 
 1. Choose the **Create subscription** button. The **Subscription** page loads with information about the subscripton.
 
-1. Choose the **Watch for notifications** button.
-
 	![App page showing properties of the new subscription](readme-images/Page2.PNG)
+	
+1. Choose the **Watch for notifications** button.
 
 1. Send an email to your Office 365 account. The **Notification** page displays some message properties. It may take several seconds for the page to update.
    
@@ -145,9 +145,9 @@ The following files contain code that pertains to the main purpose of the sample
 
 We'd love to get your feedback about the Microsoft Graph ASP.NET Webhooks sample. You can send your questions and suggestions to us in the [Issues](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/issues) section of this repository.
 
-Questions about the Microsoft Graph or Office 365 in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/Office365+API). Make sure that your questions or comments are tagged with *[Office365]* and *[MicrosoftGraph]*.
+Questions about Microsoft Graph or Office 365 in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/Office365+API). Make sure that your questions or comments are tagged with *[Office365]* and *[MicrosoftGraph]*.
 
-You can suggest changes for the Microsoft Graph or Office 365 on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs) or [UserVoice](https://officespdev.uservoice.com/).
+You can suggest changes for Microsoft Graph or Office 365 on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs) or [UserVoice](https://officespdev.uservoice.com/).
   
 
 ## Additional resources
