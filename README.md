@@ -2,25 +2,19 @@
 
 Subscribe for webhooks to get notified when your user's data changes so you don't have to poll for changes.
 
-This sample web application shows how to create webhook subscriptions and receive notifications from Microsoft Graph.
+This ASP.NET MVC sample shows how to start getting notifications from Microsoft Graph. The following are common tasks that a web application performs with Microsoft Graph webhooks.
 
-**Create subscriptions**
+* Sign-in your users with their work or school account to get an access token.
+* Use the access token to create a webhook subscription.
+* Send back a validation token to confirm the notification URL.
+* Listen for notifications from Microsoft Graph.
+* Request for more information in Microsoft Office 365 using data in the notification.
+  
+![Microsoft Graph Webhook Sample for ASP.NET screenshot](/readme-images/Page1.PNG)
 
-- Sign in and authenticate the user. 
-- Build and send a `POST /subscriptions` request. 
-- Return the validation token to confirm the notification URL.  
-- Parse the subscription object.
+The previous screenshot shows the app's start page. After your app gets a subscription, your app is notified when events happen in user data. Your app can then react to the event.
 
-**Receive notifications**
-
-- Listen for notifications and respond with a 200 HTTP status code.
-- Parse the notification object.
-- Use the notification data to get the message that you were notified about. 
-
-This sample subscribes to the `me/mailFolders('Inbox')/messages` resource for `created` changes. It gets notified when the user receives a mail message, and then updates a page with information about the message.     
-
-To learn more about Microsoft Graph webhooks, see the [Subscription API](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription).
-
+This sample subscribes to the `me/mailFolders('Inbox')/messages` resource for `created` changes. It gets notified when the user receives a mail message, and then updates a page with information about the message. 
 
 ## Prerequisites
 
@@ -30,11 +24,7 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * A public HTTPS endpoint to receive and send HTTP requests. You can use Microsoft Azure or another service to host your endpoint. If you prefer, you can use ngrok (or a similar tool) while testing to temporarily allow messages from Microsoft Graph to tunnel to a port on your local computer. [Instructions for setting up ngrok](#ngrok) are included below.
 
-* An Office 365 account. You can sign up for an [Office 365 Developer subscription](https://portal.office.com/Signup/Signup.aspx?OfferId=6881A1CB-F4EB-4db3-9F18-388898DAF510&DL=DEVELOPERPACK&ali=1#0) that includes the resources that you need to start building Office 365 apps.
-
-   >If you already have a subscription, this link sends you to a page with the message *Sorry, you can’t add that to your current account*. In that case, use an account from your current Office 365 subscription.
-
-* The client ID and key from the application that you added to an Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies app registration. Use the following parameters:
+* The client ID and key from the application that you added to a Microsoft Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies app registration. Use the following parameters:
 
    |       Parameter | Value                    |
    |----------------:|:-------------------------|
@@ -43,13 +33,13 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
    |    Redirect URI | https://localhost:44300/ |
    | App permissions | Mail.Read                |
   
-   Copy and store the returned **Client ID** and **Client Secret** values. (Or, see how to [register the app manually].)
+   Copy and store the returned **Client ID** and **Client Secret** values.
 
 
 <a name="ngrok"></a>
 ### Set up the ngrok proxy (optional)
 
-You must expose a public HTTPS endpoint to create a subscription and receive notifications from Microsoft Graph. Or if you prefer, you can use ngrok while testing to temporarily allow messages from Microsoft Graph to tunnel to a port on your local computer. This makes it easier to test and debug webhooks. To learn more about using ngrok, see the [ngrok website](https://ngrok.com/).  
+You must expose a public HTTPS endpoint to create a subscription and receive notifications from Microsoft Graph. Or if you prefer, you can use ngrok while testing to temporarily allow messages from Microsoft Graph to tunnel to a *localhost* port on your computer. This makes it easier to test and debug webhooks. To learn more about using ngrok, see the [ngrok website](https://ngrok.com/).  
 
 1. In Solution Explorer, select the **GraphWebhooks** project.
 
@@ -74,6 +64,8 @@ ngrok http <port-number> -host-header=localhost:<port-number>
 	![The forwarding HTTPS URL in the ngrok console](readme-images/ngrok2.PNG)
 
    >Keep the console open while testing. If you close it, the tunnel also closes and you'll need to generate a new URL and update the sample.
+
+See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Nodejs-Webhooks/wiki/Hosting-the-sample-without-a-tunnel) and [Why do I have to use a tunnel?](https://github.com/OfficeDev/Microsoft-Graph-Nodejs-Webhooks/wiki/Why-do-I-have-to-use-a-tunnel) for more information.
 
 
 ## Configure and run the sample
@@ -145,14 +137,15 @@ The following files contain code that pertains to the main purpose of the sample
 
 We'd love to get your feedback about the Microsoft Graph ASP.NET Webhooks sample. You can send your questions and suggestions to us in the [Issues](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/issues) section of this repository.
 
-Questions about Microsoft Graph or Office 365 in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/Office365+API). Make sure that your questions or comments are tagged with *[Office365]* and *[MicrosoftGraph]*.
+Questions about Microsoft Graph or Office 365 in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/MicrosoftGraph+Office365). Make sure that your questions or comments are tagged with *[MicrosoftGraph]* and *[Office365]*.
 
-You can suggest changes for Microsoft Graph or Office 365 on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs) or [UserVoice](https://officespdev.uservoice.com/).
+You can suggest changes for Microsoft Graph or Office 365 on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs).
   
 
 ## Additional resources
 
-* [Microsoft Graph documentation](http://graph.microsoft.io)
+* [Working with Microsoft Graph Webhooks](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription)
+* [Microsoft Graph Node.js Webhooks sample](https://github.com/OfficeDev/Microsoft-Graph-Nodejs-Webhooks)
 * [Microsoft Graph API Reference](http://graph.microsoft.io/docs/api-reference/v1.0)
 * [Call Microsoft Graph in an ASP.NET MVC app](https://graph.microsoft.io/en-us/docs/platform/aspnetmvc)
 
