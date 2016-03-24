@@ -24,7 +24,7 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * A public HTTPS endpoint to receive and send HTTP requests. You can use Microsoft Azure or another service to host your endpoint. If you prefer, you can use ngrok (or a similar tool) while testing to temporarily allow messages from Microsoft Graph to tunnel to a port on your local computer. [Instructions for setting up ngrok](#ngrok) are included below.
 
-* The client ID and key from the application that you added to a Microsoft Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies app registration. Use the following parameters:
+* The client ID and key from the application that you added to a Microsoft Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies the process. Use the following parameters:
 
    |       Parameter | Value                    |
    |----------------:|:-------------------------|
@@ -39,7 +39,7 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 <a name="ngrok"></a>
 ### Set up the ngrok proxy (optional)
 
-You must expose a public HTTPS endpoint to create a subscription and receive notifications from Microsoft Graph. Or if you prefer, you can use ngrok while testing to temporarily allow messages from Microsoft Graph to tunnel to a *localhost* port on your computer. This makes it easier to test and debug webhooks. To learn more about using ngrok, see the [ngrok website](https://ngrok.com/).  
+You must expose a public HTTPS endpoint to create a subscription and receive notifications from Microsoft Graph. While testing, you can use ngrok to temporarily allow messages from Microsoft Graph to tunnel to a *localhost* port on your computer. To learn more about using ngrok, see the [ngrok website](https://ngrok.com/).  
 
 1. In Solution Explorer, select the **GraphWebhooks** project.
 
@@ -105,7 +105,7 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 
 ## Key components of the sample
 
-The following files contain code that pertains to the main purpose of the sample: creating subscriptions and receiving notifications.
+The following files contain code that shows how to work with Microsoft Graph webhooks.
 
 **Controllers**  
 - [```NotificationController.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Controllers/NotificationController.cs) Receives notifications.  
@@ -139,7 +139,7 @@ We'd love to get your feedback about the Microsoft Graph ASP.NET Webhooks sample
 
 Questions about Microsoft Graph or Office 365 in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/MicrosoftGraph+Office365). Make sure that your questions or comments are tagged with *[MicrosoftGraph]* and *[Office365]*.
 
-You can suggest changes for Microsoft Graph or Office 365 on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs).
+You can suggest changes for Microsoft Graph on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs).
   
 
 ## Additional resources
