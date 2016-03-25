@@ -129,6 +129,7 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 | Issue | Resolution |
 |:------|:------|
 | The app opens to a *Server Error in '/' Application. The resource cannot be found.* browser page. | Make sure that a CSHTML view file isn't the active tab when you run the app from Visual Studio. |
+| You're using ngrok and get a 'Subscription validation request timed out' response. | Make sure that you used your project's HTTP port for the tunnel (not HTTPS). |
 
 
 ## Questions and comments
