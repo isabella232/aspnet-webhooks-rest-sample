@@ -22,7 +22,7 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * Visual Studio 2015 installed on your development computer. 
 
-* A public HTTPS endpoint to receive and send HTTP requests. You can use Microsoft Azure or another service to host your endpoint. If you prefer, you can use ngrok (or a similar tool) while testing to temporarily allow messages from Microsoft Graph to tunnel to a port on your local computer. [Instructions for setting up ngrok](#ngrok) are included below.
+* A public HTTPS endpoint to receive and send HTTP requests. You can use Microsoft Azure or another service to host your endpoint. If you want, you can use ngrok (or a similar tool) while testing to temporarily allow messages from Microsoft Graph to tunnel to a port on your local computer. [Instructions for setting up ngrok](#ngrok) are included below.
 
 * The client ID and key from the application that you added to a Microsoft Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies the process. Use the following parameters:
 
@@ -90,7 +90,7 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
  
 1. Sign in with your Office 365 work or school account. 
 
-1. Choose the **Create subscription** button. The **Subscription** page loads with information about the subscripton.
+1. Choose the **Create subscription** button. The **Subscription** page loads with information about the subscription.
 
 	![App page showing properties of the new subscription](readme-images/Page2.PNG)
 	
@@ -105,8 +105,6 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 
 ## Key components of the sample
 
-The following files contain code that shows how to work with Microsoft Graph webhooks.
-
 **Controllers**  
 - [```NotificationController.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Controllers/NotificationController.cs) Receives notifications.  
 - [```SubscriptionContoller.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Controllers/SubscriptionController.cs) Creates and receives webhook subscriptions.
@@ -118,12 +116,12 @@ The following files contain code that shows how to work with Microsoft Graph web
 
 **Views**  
 - [```Notification/Notification.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Views/Notification/Notification.cshtml) Displays information about received messages, and contains the **Delete subscription and sign out** button. 
-- [```Subscription/CreateSubscription.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Views/Subscription/Index.cshtml) Landing page that contains the **Create subscription** button. 
-- [```Subscription/SubscriptionRequestResponse.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Views/Subscription/Subscription.cshtml) Displays subscription properties, and contains the **Watch for notifications** button. 
+- [```Subscription/Index.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Views/Subscription/Index.cshtml) Landing page that contains the **Create subscription** button. 
+- [```Subscription/Subscription.cshtml```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Views/Subscription/Subscription.cshtml) Displays subscription properties, and contains the **Watch for notifications** button. 
 
 **Other**  
 - [```Web.config```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Web.config) Contains values used for authentication and authorization. 
-- [```Startup.Auth.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/App_Start/Startup.Auth.cs) Contains code used for authentication and authorization when the app starts. The sample uses [OpenID Connect](https://msdn.microsoft.com/en-us/library/azure/jj573266.aspx) and [Active Directory Authentication Library .NET (v2)](http://go.microsoft.com/fwlink?LinkId=258232) to authenticate and authorize the user.
+- [```Startup.Auth.cs```](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/App_Start/Startup.Auth.cs) Contains code used for authentication and authorization when the app starts. The sample uses [OpenID Connect](https://msdn.microsoft.com/en-us/library/azure/dn645541.aspx) and [Active Directory Authentication Library .NET (v2)](http://go.microsoft.com/fwlink?LinkId=258232) to authenticate and authorize the user.
 
 
 ## Troubleshooting
@@ -144,7 +142,6 @@ You can suggest changes for Microsoft Graph on [GitHub](https://github.com/Offic
 
 ## Additional resources
 
-* [Working with Microsoft Graph Webhooks](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription)
 * [Microsoft Graph Node.js Webhooks sample](https://github.com/OfficeDev/Microsoft-Graph-Nodejs-Webhooks)
 * [Microsoft Graph API Reference](http://graph.microsoft.io/docs/api-reference/v1.0)
 * [Call Microsoft Graph in an ASP.NET MVC app](https://graph.microsoft.io/en-us/docs/platform/aspnetmvc)
