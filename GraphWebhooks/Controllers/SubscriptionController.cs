@@ -8,13 +8,12 @@ using System.Web;
 using System.Web.Mvc;
 using GraphWebhooks.Models;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.OpenIdConnect;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using GraphWebhooks.Utils;
 
 namespace GraphWebhooks.Controllers
 {
@@ -27,35 +26,12 @@ namespace GraphWebhooks.Controllers
         }
 
         // Create webhook subscriptions.
-        [Authorize]
+        [Authorize, HandleAdalException]
         public async Task<ActionResult> CreateSubscription()
         {
-
-            // Get an access token and add it to the client.
-            AuthenticationResult authResult = null;
-            try
-            {
-                string userObjId = System.Security.Claims.ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-                string tenantId = System.Security.Claims.ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
-                string authority = string.Format(System.Globalization.CultureInfo.InvariantCulture, ConfigurationManager.AppSettings["ida:AADInstance"], tenantId);
-                AuthenticationContext authContext = new AuthenticationContext(authority, false);
-                ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientId"], ConfigurationManager.AppSettings["ida:ClientSecret"]);
-                try
-                {
-                    authResult = await authContext.AcquireTokenSilentAsync("https://graph.microsoft.com", credential,
-                                    new UserIdentifier(userObjId, UserIdentifierType.UniqueId));
-                }
-                catch (AdalSilentTokenAcquisitionException)
-                {
-                    Request.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/Subscription/CreateSubscription" },
-                                                OpenIdConnectAuthenticationDefaults.AuthenticationType);
-                    return new EmptyResult();
-                }
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("Index", "Error", new { message = ex.Message, debug = ex.StackTrace });
-            }
+            // Get an access token and add it to the client. 
+            // This sample stores the refreshToken, so get the AuthenticationResult that has the access token and refresh token.
+            AuthenticationResult authResult = await AuthHelper.GetAccessTokenAsync();
 
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
@@ -95,10 +71,9 @@ namespace GraphWebhooks.Controllers
                 HttpRuntime.Cache.Insert("subscriptionId_" + viewModel.Subscription.Id,
                     Tuple.Create(viewModel.Subscription.ClientState, authResult.RefreshToken), null, DateTime.MaxValue, new TimeSpan(24, 0, 0), System.Web.Caching.CacheItemPriority.NotRemovable, null);
 
-                // Save the latest subscription ID, so we can delete it later and filter the view on it.
+                // Save the latest subscription ID, so we can delete it later.
                 Session["SubscriptionId"] = viewModel.Subscription.Id;
                 return View("Subscription", viewModel);
-
             }
             else
             {
@@ -108,7 +83,7 @@ namespace GraphWebhooks.Controllers
         }
 
         // Delete the current webhooks subscription and sign out the user.
-        [Authorize]
+        [Authorize, HandleAdalException]
         public async Task<ActionResult> DeleteSubscription()
         {
             string subscriptionId = (string)Session["SubscriptionId"];
@@ -118,36 +93,10 @@ namespace GraphWebhooks.Controllers
                 string serviceRootUrl = "https://graph.microsoft.com/stagingbeta/subscriptions/";
 
                 // Get an access token and add it to the client.
-                string accessToken;
-                try
-                {
-                    string userObjId = System.Security.Claims.ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-                    string tenantId = System.Security.Claims.ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
-                    string authority = string.Format(System.Globalization.CultureInfo.InvariantCulture, ConfigurationManager.AppSettings["ida:AADInstance"], tenantId);
-                    AuthenticationContext authContext = new AuthenticationContext(authority, false);
-                    ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientId"], ConfigurationManager.AppSettings["ida:ClientSecret"]);
-                    AuthenticationResult authResult = null;
-                    try
-                    {
-                        authResult = await authContext.AcquireTokenSilentAsync("https://graph.microsoft.com", credential,
-                                        new UserIdentifier(userObjId, UserIdentifierType.UniqueId));
-                    }
-                    catch (AdalSilentTokenAcquisitionException)
-                    {
-                        Request.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/Subscription/DeleteSubscription" },
-                                                    OpenIdConnectAuthenticationDefaults.AuthenticationType);
-                        return new EmptyResult();
-                    }
-                    accessToken = authResult?.AccessToken;
-
-                }
-                catch (Exception ex)
-                {
-                    return RedirectToAction("Index", "Error", new { message = ex.Message, debug = "" });
-                }
+                AuthenticationResult authResult = await AuthHelper.GetAccessTokenAsync();
 
                 HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 // Send the 'DELETE /subscriptions/id' request.

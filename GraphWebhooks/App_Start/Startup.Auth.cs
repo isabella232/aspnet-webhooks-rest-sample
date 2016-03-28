@@ -65,6 +65,8 @@ namespace GraphWebhooks
                         {
                             // Suppress the exception if you don't want to see the error.
                             context.HandleResponse();
+                            string appBaseUrl = context.Request.Scheme + "://" + context.Request.Host + context.Request.PathBase;
+                            context.Response.Redirect(appBaseUrl + "/subscription/index");
 
                             return Task.FromResult(0);
                         }

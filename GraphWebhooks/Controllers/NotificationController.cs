@@ -9,10 +9,9 @@ using System.Web;
 using System.Web.Mvc;
 using GraphWebhooks.Models;
 using GraphWebhooks.SignalR;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using GraphWebhooks.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -57,10 +56,10 @@ namespace GraphWebhooks.Controllers
                             {
                                 Notification current = JsonConvert.DeserializeObject<Notification>(notification.ToString());
 
+                                // Check the client state value to verify the message is from Microsoft Graph. 
                                 var subscriptionParams = (Tuple<string, string>)HttpRuntime.Cache.Get("subscriptionId_" + current.SubscriptionId);
                                 if (subscriptionParams != null)
                                 {
-                                    // Verify the message is from Microsoft Graph.
                                     if (current.ClientState == subscriptionParams.Item1)
                                     {
                                         // Just keep the latest notification for each resource.
@@ -68,12 +67,12 @@ namespace GraphWebhooks.Controllers
                                         notifications[current.Resource] = current;
                                     }
                                 }
-                            }
-                            if (notifications.Count > 0)
-                            {
+                                if (notifications.Count > 0)
+                                {
 
-                                // Query for the changed messages. 
-                                await GetChangedMessagesAsync(notifications.Values);
+                                    // Query for the changed messages. 
+                                    await GetChangedMessagesAsync(notifications.Values);
+                                }
                             }
                         }
                     }
@@ -91,28 +90,28 @@ namespace GraphWebhooks.Controllers
 
         // Get information about the changed messages and send to browser via SignalR.
         // A production application would typically queue a background job for reliability.
+        [HandleAdalException]
         public async Task GetChangedMessagesAsync(IEnumerable<Notification> notifications)
         {
             List<Message> messages = new List<Message>();
             string serviceRootUrl = "https://graph.microsoft.com/v1.0/";
-
-            // Get an access token and add it to the client.
-            string authority = string.Format(ConfigurationManager.AppSettings["ida:AADInstance"], "common");
-            AuthenticationContext authContext = new AuthenticationContext(authority);
-            ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientId"], ConfigurationManager.AppSettings["ida:ClientSecret"]);
-
+            
+            // Create the client that will send the request.
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             foreach (var notification in notifications)
             {
+
+                // Get the access token and add it to the request.
                 var subscriptionParams = (Tuple<string, string>)HttpRuntime.Cache.Get("subscriptionId_" + notification.SubscriptionId);
                 string refreshToken = subscriptionParams.Item2;
-                AuthenticationResult authResult = await authContext.AcquireTokenByRefreshTokenAsync(refreshToken, credential, "https://graph.microsoft.com");
+                string accessToken = await AuthHelper.GetAccessTokenFromRefreshTokenAsync(refreshToken);
+                
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, serviceRootUrl + notification.Resource);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 // Send the 'GET' request.
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, serviceRootUrl + notification.Resource);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
                 HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(continueOnCapturedContext: false);
 
                 // Get the messages from the JSON response.
