@@ -24,10 +24,11 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * A public HTTPS endpoint to receive and send HTTP requests. You can use Microsoft Azure or another service to host your endpoint. If you want, you can use ngrok (or a similar tool) while testing to temporarily allow messages from Microsoft Graph to tunnel to a port on your local computer. [Instructions for setting up ngrok](#ngrok) are included below.
 
-* The client ID and key from the application that you added to a Microsoft Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies the process. Use the following parameters:
+* The client ID and key from the application that you registered on a Microsoft Azure tenant. You can use the [Office 365 app registration tool](http://dev.office.com/app-registration), which simplifies the registration process. Use the following parameters:
 
    |       Parameter | Value                    |
    |----------------:|:-------------------------|
+   |        App name | <any>                    |
    |        App type | Web App                  |
    |     Sign on URL | https://localhost:44300/ |
    |    Redirect URI | https://localhost:44300/ |
@@ -74,9 +75,11 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 
 1. Open **GraphWebhooks.sln** in the sample files. 
 
+   >You may be prompted to trust certificates for localhost.
+
 1. In Solution Explorer, open the **Web.config** file in the root directory of the project.  
-   a. For the **AppId** key, replace *ENTER_YOUR_CLIENT_ID* with the client ID of your registered Azure application.  
-   b. For the **AppSecret** key, replace *ENTER_YOUR_SECRET* with the key of your registered Azure application.  
+   a. For the **ClientId** key, replace *ENTER_YOUR_CLIENT_ID* with the client ID of your registered Azure application.  
+   b. For the **ClientSecret** key, replace *ENTER_YOUR_SECRET* with the key of your registered Azure application.  
    d. For the **NotificationUrl** key, replace *ENTER_YOUR_URL* with your HTTPS URL. Keep the */notification/listen* portion. If you're using ngrok, the value will look something like this:
 
    ```xml
