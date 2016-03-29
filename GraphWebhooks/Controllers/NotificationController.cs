@@ -56,7 +56,7 @@ namespace GraphWebhooks.Controllers
                             {
                                 Notification current = JsonConvert.DeserializeObject<Notification>(notification.ToString());
 
-                                // Check the client state value to verify the message is from Microsoft Graph. 
+                                // Check client state to verify the message is from Microsoft Graph. 
                                 var subscriptionParams = (Tuple<string, string>)HttpRuntime.Cache.Get("subscriptionId_" + current.SubscriptionId);
                                 if (subscriptionParams != null)
                                 {

@@ -180,8 +180,8 @@
     <Compile Include="SignalR\NotificationHub.cs" />
     <Compile Include="SignalR\NotificationService.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Utils\AuthHelper.cs" />
-    <Compile Include="Utils\HandleAdalExceptionAttribute.cs" />
+    <Compile Include="Controllers\Utils\AuthHelper.cs" />
+    <Compile Include="Controllers\Utils\HandleAdalExceptionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
