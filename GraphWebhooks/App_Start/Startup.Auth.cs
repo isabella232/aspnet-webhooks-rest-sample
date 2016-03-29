@@ -67,7 +67,7 @@ namespace GraphWebhooks
                             context.HandleResponse();
                             string appBaseUrl = context.Request.Scheme + "://" + context.Request.Host + context.Request.PathBase;
                             context.Response.Redirect(appBaseUrl + "/subscription/index");
-
+                            
                             return Task.FromResult(0);
                         }
                     }

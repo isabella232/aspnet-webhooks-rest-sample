@@ -76,15 +76,14 @@ namespace GraphWebhooks.Controllers
                             }
                         }
                     }
-                    return new HttpStatusCodeResult(202);
                 }
                 catch (Exception)
                 {
 
                     // TODO: Handle the exception.
-                    // Return a 202 so the service doesn't resend the notification.
-                    return new HttpStatusCodeResult(202);
+                    // Still return a 202 so the service doesn't resend the notification.
                 }
+                return new HttpStatusCodeResult(202);
             }
         }
 
