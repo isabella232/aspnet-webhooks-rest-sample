@@ -25,7 +25,7 @@ namespace GraphWebhooks.Controllers
             return View();
         }
 
-        // Create webhook subscriptions.
+        // Create a webhook subscription.
         [Authorize, HandleAdalException]
         public async Task<ActionResult> CreateSubscription()
         {
@@ -39,7 +39,7 @@ namespace GraphWebhooks.Controllers
 
             // Build the request.
             // This sample subscribes to get notifications when the user receives an email.
-            string subscriptionsEndpoint = "https://graph.microsoft.com/stagingbeta/subscriptions/";
+            string subscriptionsEndpoint = "https://graph.microsoft.com/v1.0/subscriptions/";
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, subscriptionsEndpoint);
             var subscription = new Subscription
             {
@@ -90,7 +90,7 @@ namespace GraphWebhooks.Controllers
 
             if (!string.IsNullOrEmpty(subscriptionId))
             {
-                string serviceRootUrl = "https://graph.microsoft.com/stagingbeta/subscriptions/";
+                string serviceRootUrl = "https://graph.microsoft.com/v1.0/subscriptions/";
 
                 // Get an access token and add it to the client.
                 AuthenticationResult authResult = await AuthHelper.GetAccessTokenAsync();
