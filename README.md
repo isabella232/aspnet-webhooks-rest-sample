@@ -61,7 +61,7 @@ ngrok http <port-number> -host-header=localhost:<port-number>
 
 	![Example command to run in the ngrok console](readme-images/ngrok1.PNG)
 
-1. Copy the HTTPS URL that's shown in the console. 
+1. Copy the HTTPS URL that's shown in the console. You'll use this to configure your notification URL in the sample.
 
 	![The forwarding HTTPS URL in the ngrok console](readme-images/ngrok2.PNG)
 
@@ -80,8 +80,10 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 
 1. In Solution Explorer, open the **Web.config** file in the root directory of the project.  
    a. For the **ClientId** key, replace *ENTER_YOUR_CLIENT_ID* with the client ID of your registered Azure application.  
+ 
    b. For the **ClientSecret** key, replace *ENTER_YOUR_SECRET* with the key of your registered Azure application.  
-   d. For the **NotificationUrl** key, replace *ENTER_YOUR_URL* with the HTTPS URL. Keep the */notification/listen* portion. If you're using ngrok, use the HTTPS URL that you copied. The value will look something like this:
+
+   c. For the **NotificationUrl** key, replace *ENTER_YOUR_URL* with the HTTPS URL. Keep the */notification/listen* portion. If you're using ngrok, use the HTTPS URL that you copied. The value will look something like this:
 
    ```xml
 <add key="ida:NotificationUrl" value="https://0f6fd138.ngrok.io/notification/listen" />
@@ -133,7 +135,7 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 | Issue | Resolution |
 |:------|:------|
 | The app opens to a *Server Error in '/' Application. The resource cannot be found.* browser page. | Make sure that a CSHTML view file isn't the active tab when you run the app from Visual Studio. |
-| You're using ngrok and get a 'Subscription validation request timed out' response. | Make sure that you used your project's HTTP port for the tunnel (not HTTPS). |
+| You're using ngrok and get a *Subscription validation request timed out* response. | Make sure that you used your project's HTTP port for the tunnel (not HTTPS). |
 
 
 ## Questions and comments
