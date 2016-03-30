@@ -7,7 +7,7 @@ This ASP.NET MVC sample shows how to start getting notifications from Microsoft 
 The following are common tasks that a web application performs with Microsoft Graph webhooks.
 
 * Sign-in your users with their work or school account to get an access token.
-* Use the access token to create a webhook subscription.
+* Use the access token to create a webhook [subscription](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription).
 * Send back a validation token to confirm the notification URL.
 * Listen for notifications from Microsoft Graph.
 * Request for more information in Microsoft Office 365 using data in the notification.
