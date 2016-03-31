@@ -14,7 +14,7 @@ The following are common tasks that a web application performs with Microsoft Gr
   
 ![Microsoft Graph Webhook Sample for ASP.NET screenshot](/readme-images/Page1.PNG)
 
-The previous screenshot shows the app's start page. After the app creates a subscription, Microsoft Graph sends a notification to the registered endpoint when events happen in user data. Your app can then react to the event.
+The previous screenshot shows the app's start page. After the app creates a subscription on behalf of the signed-in user, Microsoft Graph sends a notification to the registered endpoint when events happen in the user's data. The app then reacts to the event.
 
 This sample subscribes to the `me/mailFolders('Inbox')/messages` resource for `created` changes. It gets notified when the user receives a mail message, and then updates a page with information about the message. 
 
@@ -127,7 +127,7 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 
 **Other**  
 - [`Web.config`](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Web.config) Contains values used for authentication and authorization. 
-- [`Startup.Auth.cs`](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/App_Start/Startup.Auth.cs) and [`Controllers/Utils/AuthHelper`]() Contain code used for authentication and authorization. The sample uses [OpenID Connect](https://msdn.microsoft.com/en-us/library/azure/dn645541.aspx) and [Active Directory Authentication Library .NET (v2)](http://go.microsoft.com/fwlink?LinkId=258232) to authenticate and authorize the user.
+- [`Startup.Auth.cs`](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/App_Start/Startup.Auth.cs) and [`Controllers/Utils/AuthHelper`](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Controllers/Utils/AuthHelper.cs) Contain code used for authentication and authorization. The sample uses [OpenID Connect](https://msdn.microsoft.com/en-us/library/azure/dn645541.aspx) and [Active Directory Authentication Library .NET (v2)](http://go.microsoft.com/fwlink?LinkId=258232) to authenticate and authorize the user.
 
 
 ## Troubleshooting
@@ -150,6 +150,7 @@ You can suggest changes for Microsoft Graph on [GitHub](https://github.com/Offic
 ## Additional resources
 
 * [Microsoft Graph Node.js Webhooks sample](https://github.com/OfficeDev/Microsoft-Graph-Nodejs-Webhooks)
+* [Subscription resource](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription)
 * [Microsoft Graph documentation](http://graph.microsoft.io/)
 * [Call Microsoft Graph in an ASP.NET MVC app](https://graph.microsoft.io/en-us/docs/platform/aspnetmvc)
 * [Set up your Office 365 development environment](https://msdn.microsoft.com/office/office365/howto/setup-development-environment?aspnet)
