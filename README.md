@@ -129,7 +129,6 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 - [`Web.config`](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Web.config) Contains values used for authentication and authorization. 
 - [`Startup.Auth.cs`](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/App_Start/Startup.Auth.cs) and [`Controllers/Utils/AuthHelper`](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/blob/master/GraphWebhooks/Controllers/Utils/AuthHelper.cs) Contain code used for authentication and authorization. The sample uses [OpenID Connect](https://msdn.microsoft.com/en-us/library/azure/dn645541.aspx) and [Active Directory Authentication Library .NET (v2)](http://go.microsoft.com/fwlink?LinkId=258232) to authenticate and authorize the user.
 
-
 ## Troubleshooting
 
 | Issue | Resolution |
@@ -137,6 +136,12 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 | The app opens to a *Server Error in '/' Application. The resource cannot be found.* browser page. | Make sure that a CSHTML view file isn't the active tab when you run the app from Visual Studio. |
 | You're using ngrok and get a *Subscription validation request timed out* response. | Make sure that you used your project's HTTP port for the tunnel (not HTTPS). |
 
+<a name="contributing"></a>
+## Contributing ##
+
+If you'd like to contribute to this sample, see [CONTRIBUTING.MD](/CONTRIBUTING.md).
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Questions and comments
 
@@ -145,7 +150,6 @@ We'd love to get your feedback about the Microsoft Graph ASP.NET Webhooks sample
 Questions about Microsoft Graph in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/MicrosoftGraph). Make sure that your questions or comments are tagged with *[MicrosoftGraph]*.
 
 You can suggest changes for Microsoft Graph on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs).
-  
 
 ## Additional resources
 
@@ -157,4 +161,3 @@ You can suggest changes for Microsoft Graph on [GitHub](https://github.com/Offic
 
 ## Copyright
 Copyright (c) 2016 Microsoft. All rights reserved.
-
