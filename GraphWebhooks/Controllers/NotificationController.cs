@@ -67,12 +67,12 @@ namespace GraphWebhooks.Controllers
                                         notifications[current.Resource] = current;
                                     }
                                 }
-                                if (notifications.Count > 0)
-                                {
-
-                                    // Query for the changed messages. 
-                                    await GetChangedMessagesAsync(notifications.Values);
-                                }
+                            }
+                            
+                            if (notifications.Count > 0)
+                            {
+                                // Query for the changed messages. 
+                                await GetChangedMessagesAsync(notifications.Values);
                             }
                         }
                     }
