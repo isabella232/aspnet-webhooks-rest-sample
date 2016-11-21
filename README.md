@@ -30,7 +30,7 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 ### Register the app
 
-1. Sign in to the [Azure portal](https://portal.azure.com/).
+1. Sign in to the [Azure Portal](https://portal.azure.com/).
 
 2. If you have multiple tenants associated with your account, click your account name in the upper-right corner and choose the target tenant.
 
@@ -48,8 +48,11 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 9. Configure Permissions for your application:
   a. In the **Settings** menu, choose **Required permissions**.
+  
   b. Click **Add** and then choose **Select an API** > **Microsoft Graph**.
+  
   c. Click **Select Permissions** and then choose the **Read user mail** delegated permission.
+  
   d. Click **Select** and then click **Done**.
 
 10. In the **Settings** menu, choose the **Keys** section. Enter a description, choose a duration for the key, and click **Save**.
@@ -116,9 +119,9 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
  
 1. Sign in with your Office 365 work or school account. 
 
-1. Consent to the **Sign in and read your profile** and **Read user mail** permissions. 
+1. Consent to the **Read your mail** and **Sign you in and read your profile** permissions. 
     
-   If you don't see the **Read user mail** permission, you must add it to the registered app in the [Azure portal](https://portal.azure.com/) before your user gives consent. See the [Register the app](#register-the-app) section for instructions.
+   If you don't see the **Read your mail** permission, choose **Cancel** and then add the **Read user mail** permission to the app in the [Azure Portal](https://portal.azure.com/). See the [Register the app](#register-the-app) section for instructions.
 
 1. Choose the **Create subscription** button. The **Subscription** page loads with information about the subscription.
 
