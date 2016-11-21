@@ -2,15 +2,15 @@
 
 Subscribe for webhooks to get notified when your user's data changes so you don't have to poll for changes.
 
-This ASP.NET MVC sample shows how to start getting notifications from Microsoft Graph. [Microsoft Graph](http://graph.microsoft.io/) provides a unified API endpoint to access data from the Microsoft cloud.
+This ASP.NET MVC sample shows how to start getting notifications from Microsoft Graph. [Microsoft Graph](https://graph.microsoft.io/) provides a unified API endpoint to access data from the Microsoft cloud.
 
 The following are common tasks that a web application performs with Microsoft Graph webhooks.
 
 * Sign-in your users with their work or school account to get an access token.
-* Use the access token to create a webhook [subscription](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription).
+* Use the access token to create a webhook [subscription](https://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription).
 * Send back a validation token to confirm the notification URL.
 * Listen for notifications from Microsoft Graph.
-* Request for more information in Microsoft Office 365 using data in the notification.
+* Request more information about changed resources using data in the notification.
   
 ![Microsoft Graph Webhook Sample for ASP.NET screenshot](/readme-images/Page1.PNG)
 
@@ -24,28 +24,48 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * Visual Studio 2015 installed on your development computer. 
 
+* The application ID and key from the application that you registered on the [Azure Portal](https://portal.azure.com).
+
 * A public HTTPS endpoint to receive and send HTTP requests. You can host this on Microsoft Azure or another service, or you can [use ngrok](#ngrok) or a similar tool while testing.
 
-* The client ID and key from the application that you registered on a Microsoft Azure tenant. Use the [Office 365 app registration tool](http://dev.office.com/app-registration) to quickly register an app with the following parameters:
+### Register the app
 
-   |       Parameter | Value                    |
-   |----------------:|:-------------------------|
-   |        App name | \<any name\>             |
-   |        App type | Web App                  |
-   |     Sign on URL | https://localhost:44300/ |
-   |    Redirect URI | https://localhost:44300/ |
-   | App permissions | Mail.Read                |
-  
-   Copy and store the returned **Client ID** and **Client Secret** values. (Learn more about [setting up your development environment](https://msdn.microsoft.com/office/office365/howto/setup-development-environment?aspnet).)
+1. Sign in to the [Azure portal](https://portal.azure.com/).
+
+2. If you have multiple tenants associated with your account, click your account name in the upper-right corner and choose the target tenant.
+
+3. Choose **Azure Active Directory** in the left-hand navigation pane.
+
+4. Click **App registrations** and choose **Add**.
+
+5. Enter a friendly name for the application.
+
+6. Choose 'Web app/API' as the **Application Type** and enter *https://localhost:44300/* for the Sign-on URL. Click **Create**.
+
+7. Choose your new application from the list of registered applications, then choose **Settings** > **Properties**.
+
+8. Copy and store the Application ID value.
+
+9. Configure Permissions for your application:
+  a. In the **Settings** menu, choose **Required permissions**.
+  b. Click **Add** and then choose **Select an API** > **Microsoft Graph**.
+  c. Click **Select Permissions** and then choose the **Read user mail** delegated permission.
+  d. Click **Select** and then click **Done**.
+
+10. In the **Settings** menu, choose the **Keys** section. Enter a description, choose a duration for the key, and click **Save**.
+
+11. **Important**: Copy the key value--this is your app's secret. You won't be able to access this value again after you leave this pane.
 
 
 <a name="ngrok"></a>
 ### Set up the ngrok proxy (optional) 
-You must expose a public HTTPS endpoint to create a subscription and receive notifications from Microsoft Graph. While testing, you can use ngrok to temporarily allow messages from Microsoft Graph to tunnel to a *localhost* port on your computer. To learn more about using ngrok, see the [ngrok website](https://ngrok.com/).  
+You must expose a public HTTPS endpoint to create a subscription and receive notifications from Microsoft Graph. While testing, you can use ngrok to temporarily allow messages from Microsoft Graph to tunnel to a *localhost* port on your computer. 
+
+You can use the ngrok web interface (*http://127.0.0.1:4040*) to inspect the HTTP traffic that passes through the tunnel. To learn more about using ngrok, see the [ngrok website](https://ngrok.com/).  
 
 1. In Solution Explorer, select the **GraphWebhooks** project.
 
-1. Copy the **URL** port number from the **Properties** window.  If the **Properties** window isn't showing, choose **View > Properties Window**. 
+1. Copy the **URL** port number from the **Properties** window. If the **Properties** window isn't showing, choose **View > Properties Window**. 
 
 	![The URL port number in the Properties window](readme-images/PortNumber.png)
 
@@ -79,7 +99,7 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
    >You may be prompted to trust certificates for localhost.
 
 1. In Solution Explorer, open the **Web.config** file in the root directory of the project.  
-   a. For the **ClientId** key, replace *ENTER_YOUR_CLIENT_ID* with the client ID of your registered Azure application.  
+   a. For the **ClientId** key, replace *ENTER_YOUR_APP_ID* with the application ID of your registered Azure application.  
  
    b. For the **ClientSecret** key, replace *ENTER_YOUR_SECRET* with the key of your registered Azure application.  
 
@@ -95,6 +115,10 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 ### Use the app
  
 1. Sign in with your Office 365 work or school account. 
+
+1. Consent to the **Sign in and read your profile** and **Read user mail** permissions. 
+    
+   If you don't see the **Read user mail** permission, you must add it to the registered app in the [Azure portal](https://portal.azure.com/) before your user gives consent. See the [Register the app](#register-the-app) section for instructions.
 
 1. Choose the **Create subscription** button. The **Subscription** page loads with information about the subscription.
 
@@ -133,8 +157,10 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 
 | Issue | Resolution |
 |:------|:------|
-| The app opens to a *Server Error in '/' Application. The resource cannot be found.* browser page. | Make sure that a CSHTML view file isn't the active tab when you run the app from Visual Studio. |
+| You get a 403 Forbidden response when you attempt to create a subscription. | Make sure that your app registration includes the **Read user mail** delegated permission for Microsoft Graph (as described in the [Register the app](#register-the-app) section). This permission must be set before your user gives consent. Otherwise you'll need to register a new app, or remove the app for the user at [https://myapps.microsoft.com/](https://myapps.microsoft.com/). |  
+| The client does not display notifications. | If you're using ngrok, you can use the web interface (*http://127.0.0.1:4040*) to see whether the notification is being sent. If Microsoft Graph is not sending notifications, please open an [issue](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/issues) in the sample repo or open a [Stack Overflow](https://stackoverflow.com/questions/tagged/MicrosoftGraph) issue tagged with *[MicrosoftGraph]*. |
 | You're using ngrok and get a *Subscription validation request timed out* response. | Make sure that you used your project's HTTP port for the tunnel (not HTTPS). |
+| The app opens to a *Server Error in '/' Application. The resource cannot be found.* browser page. | Make sure that a CSHTML view file isn't the active tab when you run the app from Visual Studio. |
 
 <a name="contributing"></a>
 ## Contributing ##
@@ -147,15 +173,15 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 We'd love to get your feedback about the Microsoft Graph ASP.NET Webhooks sample. You can send your questions and suggestions to us in the [Issues](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/issues) section of this repository.
 
-Questions about Microsoft Graph in general should be posted to [Stack Overflow](http://stackoverflow.com/questions/tagged/MicrosoftGraph). Make sure that your questions or comments are tagged with *[MicrosoftGraph]*.
+Questions about Microsoft Graph in general should be posted to . Make sure that your questions or comments are tagged with *[MicrosoftGraph]*.
 
 You can suggest changes for Microsoft Graph on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs).
 
 ## Additional resources
 
 * [Microsoft Graph Node.js Webhooks sample](https://github.com/OfficeDev/Microsoft-Graph-Nodejs-Webhooks)
-* [Subscription resource](http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription)
-* [Microsoft Graph documentation](http://graph.microsoft.io/)
+* [Subscription resource](https://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription)
+* [Microsoft Graph documentation](https://graph.microsoft.io/)
 * [Call Microsoft Graph in an ASP.NET MVC app](https://graph.microsoft.io/en-us/docs/platform/aspnetmvc)
 * [Set up your Office 365 development environment](https://msdn.microsoft.com/office/office365/howto/setup-development-environment?aspnet)
 
