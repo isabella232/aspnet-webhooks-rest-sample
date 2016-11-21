@@ -24,13 +24,17 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 * Visual Studio 2015 installed on your development computer. 
 
-* The application ID and key from the application that you registered on the [Azure Portal](https://portal.azure.com).
+* A [work or school account](http://dev.office.com/devprogram).
+
+* The application ID and key from the application that you [register on the Azure Portal](#register-the-app).
 
 * A public HTTPS endpoint to receive and send HTTP requests. You can host this on Microsoft Azure or another service, or you can [use ngrok](#ngrok) or a similar tool while testing.
 
 ### Register the app
 
-1. Sign in to the [Azure Portal](https://portal.azure.com/).
+This app uses the v1.0 Azure AD endpoint, so you'll register it in the [Azure Portal](https://portal.azure.com/).
+
+1. Sign in to the portal using your work or school account.
 
 2. If you have multiple tenants associated with your account, click your account name in the upper-right corner and choose the target tenant.
 
@@ -42,22 +46,24 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 6. Choose 'Web app/API' as the **Application Type** and enter *https://localhost:44300/* for the Sign-on URL. Click **Create**.
 
-7. Choose your new application from the list of registered applications, then choose **Settings** > **Properties**.
+7. Choose your new application from the list of registered applications.
 
-8. Copy and store the Application ID value.
+8. Click **Settings**, and then choose **Properties**. Copy and store the Application ID value.
 
-9. Configure Permissions for your application:
-  a. In the **Settings** menu, choose **Required permissions**.
+9. Configure Permissions for your application:  
+  a. In the **Settings** pane, choose **Required permissions**.
   
-  b. Click **Add** and then choose **Select an API** > **Microsoft Graph**.
+  b. Click **Add** and then choose **Select an API**, choose **Microsoft Graph**, and then click **Select**.
   
-  c. Click **Select Permissions** and then choose the **Read user mail** delegated permission.
+  c. For **Select Permissions**, scroll down to **Delegated Permissions** and choose **Read user mail**.
   
   d. Click **Select** and then click **Done**.
 
-10. In the **Settings** menu, choose the **Keys** section. Enter a description, choose a duration for the key, and click **Save**.
+10. In the **Settings** pane, choose **Keys**. Enter a description, choose a duration for the key, and click **Save**.
 
 11. **Important**: Copy the key value--this is your app's secret. You won't be able to access this value again after you leave this pane.
+
+You'll use the application ID and secret to configure the app in Visual Studio.
 
 
 <a name="ngrok"></a>
@@ -117,11 +123,11 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 
 ### Use the app
  
-1. Sign in with your Office 365 work or school account. 
+1. Sign in with your work or school account. 
 
 1. Consent to the **Read your mail** and **Sign you in and read your profile** permissions. 
     
-   If you don't see the **Read your mail** permission, choose **Cancel** and then add the **Read user mail** permission to the app in the [Azure Portal](https://portal.azure.com/). See the [Register the app](#register-the-app) section for instructions.
+   If you don't see the **Read your mail** permission, choose **Cancel** and then add the **Read user mail** permission to the app in the Azure Portal. See the [Register the app](#register-the-app) section for instructions.
 
 1. Choose the **Create subscription** button. The **Subscription** page loads with information about the subscription.
 
