@@ -4,7 +4,7 @@ Subscribe for webhooks to get notified when your user's data changes so you don'
 
 This ASP.NET MVC sample shows how to start getting notifications from Microsoft Graph. [Microsoft Graph](https://graph.microsoft.io/) provides a unified API endpoint to access data from the Microsoft cloud.
 
-The following are common tasks that a web application performs with Microsoft Graph webhooks.
+The following are common tasks that a web application performs with [Microsoft Graph webhooks](https://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/webhooks).
 
 * Sign-in your users with their work or school account to get an access token.
 * Use the access token to create a webhook [subscription](https://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription).
@@ -167,7 +167,7 @@ See [Hosting without a tunnel](https://github.com/OfficeDev/Microsoft-Graph-Node
 | Issue | Resolution |
 |:------|:------|
 | You get a 403 Forbidden response when you attempt to create a subscription. | Make sure that your app registration includes the **Read user mail** delegated permission for Microsoft Graph (as described in the [Register the app](#register-the-app) section). This permission must be set before your user gives consent. Otherwise you'll need to register a new app, or remove the app for the user at [https://myapps.microsoft.com/](https://myapps.microsoft.com/). |  
-| The client does not receive notifications. | If you're using ngrok, you can use the web interface (http://127.0.0.1:4040) to see whether the notification is being received. If you're not using ngrok, monitor the network traffic using the tools your hosting service provides, or try using ngrok.<br />If Microsoft Graph is not sending notifications, please open a [StackOverflow](https://stackoverflow.com/questions/tagged/MicrosoftGraph) issue tagged *[MicrosoftGraph]*. Include the subscription ID, the time it was created, and the correlation ID from the response (if you have it).<br /><br />Known issue: Occasionally the notification is received, and the retrieved message is sent to NotificationService, but the SignalR client in this sample does not update. When this happens, it's usually the first notification after the subscription is created. |
+| The client does not receive notifications. | If you're using ngrok, you can use the web interface (http://127.0.0.1:4040) to see whether the notification is being received. If you're not using ngrok, monitor the network traffic using the tools your hosting service provides, or try using ngrok.<br />If Microsoft Graph is not sending notifications, please open a [Stack Overflow](https://stackoverflow.com/questions/tagged/MicrosoftGraph) issue tagged *[MicrosoftGraph]*. Include the subscription ID, the time it was created, and the correlation ID from the response (if you have it).<br /><br />Known issue: Occasionally the notification is received, and the retrieved message is sent to NotificationService, but the SignalR client in this sample does not update. When this happens, it's usually the first notification after the subscription is created. |
 | You're using ngrok and get a *Subscription validation request timed out* response. | Make sure that you used your project's HTTP port for the tunnel (not HTTPS). |
 | The app opens to a *Server Error in '/' Application. The resource cannot be found.* browser page. | Make sure that a CSHTML view file isn't the active tab when you run the app from Visual Studio. |
 
@@ -182,17 +182,17 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 We'd love to get your feedback about the Microsoft Graph ASP.NET Webhooks sample. You can send your questions and suggestions to us in the [Issues](https://github.com/OfficeDev/Microsoft-Graph-ASPNET-Webhooks/issues) section of this repository.
 
-Questions about Microsoft Graph in general should be posted to . Make sure that your questions or comments are tagged with *[MicrosoftGraph]*.
+Questions about Microsoft Graph in general should be posted to [Stack Overflow](https://stackoverflow.com/questions/tagged/MicrosoftGraph). Make sure that your questions or comments are tagged with *[MicrosoftGraph]*.
 
-You can suggest changes for Microsoft Graph on [GitHub](https://github.com/OfficeDev/microsoft-graph-docs).
+You can suggest changes for Microsoft Graph on [GitHub](https://github.com/microsoftgraph/microsoft-graph-docs).
 
 ## Additional resources
 
-* [Microsoft Graph Node.js Webhooks sample](https://github.com/OfficeDev/Microsoft-Graph-Nodejs-Webhooks)
+* [Microsoft Graph Node.js Webhooks sample](https://github.com/microsoftgraph/Microsoft-Graph-Nodejs-Webhooks)
+* [Working with Webhooks in Microsoft Graph](https://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/webhooks)
 * [Subscription resource](https://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription)
 * [Microsoft Graph documentation](https://graph.microsoft.io/)
 * [Call Microsoft Graph in an ASP.NET MVC app](https://graph.microsoft.io/en-us/docs/platform/aspnetmvc)
-* [Set up your Office 365 development environment](https://msdn.microsoft.com/office/office365/howto/setup-development-environment?aspnet)
 
 ## Copyright
-Copyright (c) 2016 Microsoft. All rights reserved.
+Copyright (c) 2017 Microsoft. All rights reserved.
