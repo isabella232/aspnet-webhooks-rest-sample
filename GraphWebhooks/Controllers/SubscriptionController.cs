@@ -13,7 +13,8 @@ using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using GraphWebhooks.Utils;
+using GraphWebhooks.Helpers;
+using System.Security.Claims;
 
 namespace GraphWebhooks.Controllers
 {
@@ -26,20 +27,27 @@ namespace GraphWebhooks.Controllers
         }
 
         // Create a webhook subscription.
-        [Authorize, HandleAdalException]
+        [Authorize]
         public async Task<ActionResult> CreateSubscription()
         {
-            // Get an access token and add it to the client. 
-            // This sample stores the refreshToken, so get the AuthenticationResult that has the access token and refresh token.
-            AuthenticationResult authResult = await AuthHelper.GetAccessTokenAsync();
+            string subscriptionsEndpoint = "https://graph.microsoft.com/v1.0/subscriptions/";
+            string accessToken;
+            try
+            {
+                // Get an access token.
+                accessToken = await AuthHelper.GetAccessTokenAsync();
+            }
+            catch (Exception e)
+            {
+                ViewBag.Message = BuildErrorMessage(e);
+                return View("Error", e);
+            }
 
             HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            // Build the request.
             // This sample subscribes to get notifications when the user receives an email.
-            string subscriptionsEndpoint = "https://graph.microsoft.com/v1.0/subscriptions/";
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, subscriptionsEndpoint);
             var subscription = new Subscription
             {
@@ -47,10 +55,12 @@ namespace GraphWebhooks.Controllers
                 ChangeType = "created",
                 NotificationUrl = ConfigurationManager.AppSettings["ida:NotificationUrl"],
                 ClientState = Guid.NewGuid().ToString(),
-                ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 4230, 0)
+                //ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 4230, 0)
+                ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 10, 0)
             };
 
-            string contentString = JsonConvert.SerializeObject(subscription, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            string contentString = JsonConvert.SerializeObject(subscription, 
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             request.Content = new StringContent(contentString, System.Text.Encoding.UTF8, "application/json");
 
             // Send the request and parse the response.
@@ -65,13 +75,17 @@ namespace GraphWebhooks.Controllers
                     Subscription = JsonConvert.DeserializeObject<Subscription>(stringResult)
                 };
 
-                // This app temporarily stores the current subscription ID, refresh token, and client state. 
-                // These are required so the NotificationController, which is not authenticated, can retrieve an access token keyed from the subscription ID.
+                // This app temporarily stores the current subscription ID, client state, user object ID, and tenant ID. 
+                // These are required so the NotificationController, which is not authenticated, can retrieve an access token from the cache and validate the subscription.
                 // Production apps typically use some method of persistent storage.
                 HttpRuntime.Cache.Insert("subscriptionId_" + viewModel.Subscription.Id,
-                    Tuple.Create(viewModel.Subscription.ClientState, authResult.RefreshToken), null, DateTime.MaxValue, new TimeSpan(24, 0, 0), System.Web.Caching.CacheItemPriority.NotRemovable, null);
+                    Tuple.Create(
+                        viewModel.Subscription.ClientState,
+                        ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value,
+                        ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value),
+                    null, DateTime.MaxValue, new TimeSpan(24, 0, 0), System.Web.Caching.CacheItemPriority.NotRemovable, null);
 
-                // Save the latest subscription ID, so we can delete it later.
+                // This sample saves the latest subscription ID, so we can delete it later.
                 Session["SubscriptionId"] = viewModel.Subscription.Id;
                 return View("Subscription", viewModel);
             }
@@ -79,28 +93,34 @@ namespace GraphWebhooks.Controllers
             {
                 return RedirectToAction("Index", "Error", new { message = response.StatusCode, debug = await response.Content.ReadAsStringAsync() });
             }
-
         }
 
         // Delete the current webhooks subscription and sign out the user.
-        [Authorize, HandleAdalException]
+        [Authorize]
         public async Task<ActionResult> DeleteSubscription()
         {
+            string subscriptionsEndpoint = "https://graph.microsoft.com/v1.0/subscriptions/";
             string subscriptionId = (string)Session["SubscriptionId"];
+            string accessToken;
+            try
+            {
+                // Get an access token.
+                accessToken = await AuthHelper.GetAccessTokenAsync();
+            }
+            catch (Exception e)
+            {
+                ViewBag.Message = BuildErrorMessage(e);
+                return View("Error", e);
+            }
 
             if (!string.IsNullOrEmpty(subscriptionId))
-            {
-                string serviceRootUrl = "https://graph.microsoft.com/v1.0/subscriptions/";
-
-                // Get an access token and add it to the client.
-                AuthenticationResult authResult = await AuthHelper.GetAccessTokenAsync();
-
+            {             
                 HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 // Send the 'DELETE /subscriptions/id' request.
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, serviceRootUrl + subscriptionId);
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, subscriptionsEndpoint + subscriptionId);
                 HttpResponseMessage response = await client.SendAsync(request);
 
                 if (!response.IsSuccessStatusCode)
@@ -109,6 +129,13 @@ namespace GraphWebhooks.Controllers
                 }
             }
             return RedirectToAction("SignOut", "Account");
+        }
+
+        public string BuildErrorMessage(Exception e)
+        {
+            string message = e.Message;
+            if (e is AdalSilentTokenAcquisitionException) message = "Unable to get an access token. You may need to sign in again.";
+            return message;
         }
     }
 }

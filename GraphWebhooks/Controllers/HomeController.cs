@@ -11,7 +11,7 @@ namespace GraphWebhooks.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Subscription");
         }
 
         public ActionResult About()
