@@ -40,7 +40,7 @@ namespace GraphWebhooks.Helpers
         public static async Task<string> GetAccessTokenForSubscriptionAsync(string userObjectId, string tenantId)
         {
             string authority = $"{ aadInstance }/{ tenantId }";
-            tokenCache = new SampleTokenCache(userObjectId); //check if null first?
+            tokenCache = new SampleTokenCache(userObjectId);
 
             AuthenticationContext authContext = new AuthenticationContext(authority, tokenCache);
             try
