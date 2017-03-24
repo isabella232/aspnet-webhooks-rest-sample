@@ -45,9 +45,10 @@ namespace GraphWebhooks
                     },
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
-                        // If there is a code in the OpenID Connect response, redeem it for an access token and store it away.
                         AuthorizationCodeReceived = (context) =>
                         {
+
+                            // If there is a code in the OpenID Connect response, redeem it for an access token and store it away.
                             var code = context.Code;
                             string userObjectId = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
                             string tenantId = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
