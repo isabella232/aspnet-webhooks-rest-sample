@@ -121,9 +121,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
    c. For the **NotificationUrl** key, replace *ENTER_YOUR_URL* with the HTTPS URL. Keep the */notification/listen* portion. If you're using ngrok, use the HTTPS URL that you copied. The value will look something like this:
 
-   ```xml
-<add key="ida:NotificationUrl" value="https://0f6fd138.ngrok.io/notification/listen" />
-   ```
+   `<add key="ida:NotificationUrl" value="https://0f6fd138.ngrok.io/notification/listen" />`
 
 1. Make sure that the ngrok console is still running, then press F5 to build and run the solution in debug mode. 
 
@@ -147,7 +145,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 1. Choose the **Delete subscription and sign out** button. 
 
->If you update any dependencies for this sample, be sure **not** to update System.IdentityModel.Tokens.Jwt to v5, which is designed for use with .NET Core.
+>If you update any dependencies for this sample, **do not update** System.IdentityModel.Tokens.Jwt to v5, which is designed for use with .NET Core.
 
 ## Key components of the sample
 
@@ -175,7 +173,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 | Issue | Resolution |
 |:------|:------|
-| You get a 403 Forbidden response when you attempt to create a subscription. | Make sure that your app registration includes the **Read user mail** delegated permission for Microsoft Graph (as described in the [Register the app](#register-the-app) section). This permission must be set before your user gives consent. Otherwise you'll need to register a new app, add the `consent=prompt` parameter for the `/authorize` request, or remove the app for the user at [https://myapps.microsoft.com/](https://myapps.microsoft.com/). |  
+| You get a 403 Forbidden response when you attempt to create a subscription. | Make sure that your app registration includes the **Read user mail** delegated permission for Microsoft Graph (as described in the [Register the app](#register-the-app) section). This permission must be set before your user gives consent. Otherwise you'll need to register a new app, add the `prompt=consent` parameter for the `/authorize` request, or remove the app for the user at [https://myapps.microsoft.com/](https://myapps.microsoft.com/). |  
 | You do not receive notifications. | If you're using ngrok, you can use the web interface (http://127.0.0.1:4040) to see whether the notification is being received. If you're not using ngrok, monitor the network traffic using the tools your hosting service provides, or try using ngrok.<br />If Microsoft Graph is not sending notifications, please open a [Stack Overflow](https://stackoverflow.com/questions/tagged/MicrosoftGraph) issue tagged *[MicrosoftGraph]*. Include the subscription ID and the time it was created.<br /><br />Known issue with the sample UI: Occasionally the notification is received, and the retrieved message is sent to NotificationService, but the SignalR client in this sample does not update. When this happens, it's usually the first notification after the subscription is created. |  
 | You get a *Subscription validation request timed out* response. | This indicates that Microsoft Graph did not receive a validation response.<br /><br />If you're using ngrok, make sure that you used your project's HTTP port for the tunnel (not HTTPS). |  
 | The app opens to a *Server Error in '/' Application. The resource cannot be found.* browser page. | Make sure that a CSHTML view file isn't the active tab when you run the app from Visual Studio. |
