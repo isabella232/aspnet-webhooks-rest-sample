@@ -4,7 +4,7 @@ Subscribe for [Microsoft Graph webhooks](https://developer.microsoft.com/en-us/g
 
 This ASP.NET MVC sample shows how to start getting notifications from Microsoft Graph. Microsoft Graph provides a unified API endpoint to access data from the Microsoft cloud. 
 
->This sample uses the Azure AD endpoint to obtain an access token for work or school accounts. The sample uses a user-delegated permission, but messages, events, and contacts resources also support application (app-only) permissions. Currently, only drive root item resources support subscriptions for personal accounts.
+>This sample uses the Azure AD endpoint to obtain an access token for work or school accounts. The sample uses a user-delegated permission, but messages, events, and contacts resources also support application (app-only) permissions. Currently, only drive root item resources support subscriptions for personal accounts. Watch the docs as we continue to add support for these and other features.
 
 The following are common tasks that an application performs with webhooks subscriptions:
 
@@ -60,13 +60,13 @@ This app uses the Azure AD endpoint, so you'll register it in the [Azure Portal]
 
 7. Configure Permissions for your application:  
 
-  a. Choose **Settings** > **Required permissions** > **Add**.
+   a. Choose **Settings** > **Required permissions** > **Add**.
   
-  b. Choose **Select an API** > **Microsoft Graph**, and then click **Select**.
+   b. Choose **Select an API** > **Microsoft Graph**, and then click **Select**.
   
-  c. Choose **Select permissions**, scroll down to **Delegated Permissions**, choose **Read user mail**, and then click **Select**.
+   c. Choose **Select permissions**, scroll down to **Delegated Permissions**, choose **Read user mail**, and then click **Select**.
   
-  d. Click **Done**.
+   d. Click **Done**.
 
 8. Choose **Settings** > **Keys**. Enter a description, choose a duration for the key, and then click **Save**.
 
@@ -93,9 +93,7 @@ You can use the ngrok web interface (http://127.0.0.1:4040) to inspect the HTTP 
 
 1. Replace the two *{port-number}* placeholder values in the following command with the port number you copied, and then run the command in the ngrok console.
 
-   ```
-ngrok http {port-number} -host-header=localhost:{port-number}
-   ```
+   `ngrok http {port-number} -host-header=localhost:{port-number}`
 
 	![Example command to run in the ngrok console](readme-images/ngrok1.PNG)
 
