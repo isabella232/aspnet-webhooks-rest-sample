@@ -1,6 +1,10 @@
-﻿using System;
+﻿/*
+ *  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the source repository root for complete license information.
+ */
+
+ using System;
 using System.Configuration;
-using System.IdentityModel.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin.Security;
@@ -78,7 +82,6 @@ namespace GraphWebhooks
                             context.HandleResponse();
                             string appBaseUrl = context.Request.Scheme + "://" + context.Request.Host + context.Request.PathBase;
                             string message = context.Exception.Message;
-                            //context.Response.Redirect(appBaseUrl + "/subscription/index");
                             context.Response.Redirect(appBaseUrl + $"/error/index?message={ message }");
 
                             return Task.FromResult(0);

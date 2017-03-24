@@ -8,8 +8,8 @@
 }
 
 @section Scripts {
-    @Scripts.Render("~/Scripts/jquery.signalR-2.2.1.min.js")
-    @Scripts.Render("~/signalr/hubs")
+    <script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.1.min.js"></script>
+    <script src="/signalr/hubs"></script>
 
     <script>
 var connection = $.hubConnection();
