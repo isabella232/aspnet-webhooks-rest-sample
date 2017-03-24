@@ -15,8 +15,6 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using GraphWebhooks.Helpers;
 
 namespace GraphWebhooks.Controllers
 {
@@ -27,7 +25,7 @@ namespace GraphWebhooks.Controllers
             return View("Notification");
         }
 
-        // The notificationUrl endpoint that's registered with the webhook subscription.
+        // The `notificationUrl` endpoint that's registered with the webhook subscription.
         [HttpPost]
         public async Task<ActionResult> Listen()
         {
@@ -60,8 +58,9 @@ namespace GraphWebhooks.Controllers
                                 Notification current = JsonConvert.DeserializeObject<Notification>(notification.ToString());
 
                                 // Check client state to verify the message is from Microsoft Graph. 
-                                // This sample only works with subscriptions that are still cached.
                                 var subscriptionParams = HttpRuntime.Cache.Get("subscriptionId_" + current.SubscriptionId) as Tuple<string, string, string>;
+
+                                // This sample only works with subscriptions that are still cached.
                                 if (subscriptionParams != null)
                                 {
                                     if (current.ClientState == subscriptionParams.Item1)

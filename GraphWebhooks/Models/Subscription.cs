@@ -21,6 +21,7 @@ namespace GraphWebhooks.Models
         public string ClientState { get; set; }
 
         // The URL of the endpoint that receives the subscription response and notifications. Requires https.
+        // This can include custom query parameters.
         [JsonProperty(PropertyName = "notificationUrl")]
         public string NotificationUrl { get; set; }
 
@@ -30,7 +31,7 @@ namespace GraphWebhooks.Models
 
         // The amount of time in UTC format when the webhook subscription expires, based on the subscription creation time.
         // The maximum time varies for the resource subscribed to. This sample sets it to the 4230 minute maximum for messages.
-        // See http://graph.microsoft.io/en-us/docs/api-reference/v1.0/resources/subscription for maximum values for resources.
+        // See https://developer.microsoft.com/graph/docs/api-reference/v1.0/resources/subscription for maximum values for resources.
         [JsonProperty(PropertyName = "expirationDateTime")]
         public DateTimeOffset ExpirationDateTime { get; set; }
 

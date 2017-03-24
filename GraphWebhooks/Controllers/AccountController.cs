@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
-using System.Web;
+﻿/*
+ *  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the source repository root for complete license information.
+ */
+
+ using System.Web;
 using System.Web.Mvc;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
@@ -23,9 +27,9 @@ namespace GraphWebhooks.Controllers
             }
         }
 
+        // Remove all cache entries for this user and send an OpenID Connect sign-out request.
         public void SignOut()
         {
-            // Remove all cache entries for this user and send an OpenID Connect sign-out request.
             string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
             string tenantId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
             string authority = $"{ Startup.AadInstance }/{ tenantId }";

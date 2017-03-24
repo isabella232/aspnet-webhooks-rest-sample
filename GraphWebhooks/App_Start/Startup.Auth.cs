@@ -45,7 +45,7 @@ namespace GraphWebhooks
                     },
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
-                        // If there is a code in the OpenID Connect response, redeem it for an access token and refresh token, and store those away.
+                        // If there is a code in the OpenID Connect response, redeem it for an access token and store it away.
                         AuthorizationCodeReceived = (context) =>
                         {
                             var code = context.Code;
@@ -55,7 +55,7 @@ namespace GraphWebhooks
 
                             AuthenticationContext authContext = new AuthenticationContext(
                                 authority, 
-                                new SampleTokenCache(userObjectId));//new RuntimeTokenCache(userObjectId));
+                                new SampleTokenCache(userObjectId));
 
                             authContext.AcquireTokenByAuthorizationCodeAsync(
                                 code, 

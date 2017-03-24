@@ -34,6 +34,7 @@ namespace GraphWebhooks.Controllers
             string accessToken;
             try
             {
+
                 // Get an access token.
                 accessToken = await AuthHelper.GetAccessTokenAsync();
             }
@@ -43,19 +44,20 @@ namespace GraphWebhooks.Controllers
                 return View("Error", e);
             }
 
+            // Build the request.
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             // This sample subscribes to get notifications when the user receives an email.
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, subscriptionsEndpoint);
-            var subscription = new Subscription
+            Subscription subscription = new Subscription
             {
                 Resource = "me/mailFolders('Inbox')/messages",
                 ChangeType = "created",
                 NotificationUrl = ConfigurationManager.AppSettings["ida:NotificationUrl"],
                 ClientState = Guid.NewGuid().ToString(),
-                //ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 4230, 0)
+                //ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 4230, 0) // current maximum timespan for messages
                 ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 10, 0)
             };
 
@@ -63,12 +65,10 @@ namespace GraphWebhooks.Controllers
                 new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             request.Content = new StringContent(contentString, System.Text.Encoding.UTF8, "application/json");
 
-            // Send the request and parse the response.
+            // Send the `POST subscriptions` request and parse the response.
             HttpResponseMessage response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-
-                // Parse the JSON response.
                 string stringResult = await response.Content.ReadAsStringAsync();
                 SubscriptionViewModel viewModel = new SubscriptionViewModel
                 {
@@ -85,7 +85,7 @@ namespace GraphWebhooks.Controllers
                         ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value),
                     null, DateTime.MaxValue, new TimeSpan(24, 0, 0), System.Web.Caching.CacheItemPriority.NotRemovable, null);
 
-                // This sample saves the latest subscription ID, so we can delete it later.
+                // This sample saves the current subscription ID, so we can delete it later.
                 Session["SubscriptionId"] = viewModel.Subscription.Id;
                 return View("Subscription", viewModel);
             }
@@ -104,6 +104,7 @@ namespace GraphWebhooks.Controllers
             string accessToken;
             try
             {
+
                 // Get an access token.
                 accessToken = await AuthHelper.GetAccessTokenAsync();
             }
@@ -114,15 +115,16 @@ namespace GraphWebhooks.Controllers
             }
 
             if (!string.IsNullOrEmpty(subscriptionId))
-            {             
+            {
+
+                // Build the request.
                 HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                // Send the 'DELETE /subscriptions/id' request.
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, subscriptionsEndpoint + subscriptionId);
-                HttpResponseMessage response = await client.SendAsync(request);
 
+                // Send the `DELETE subscriptions/id` request.
+                HttpResponseMessage response = await client.SendAsync(request);
                 if (!response.IsSuccessStatusCode)
                 {
                     return RedirectToAction("Index", "Error", new { message = response.StatusCode, debug = response.Content.ReadAsStringAsync() });
