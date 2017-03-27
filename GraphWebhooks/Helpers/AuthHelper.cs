@@ -1,8 +1,12 @@
-﻿using GraphWebhooks.TokenStorage;
+﻿/*
+ *  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the source repository root for complete license information.
+ */
+
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using System.Configuration;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GraphWebhooks.TokenStorage;
 
 namespace GraphWebhooks.Helpers
 {
@@ -14,6 +18,7 @@ namespace GraphWebhooks.Helpers
         private static string appSecret = Startup.ClientSecret;
         private static string graphResourceId = Startup.GraphResourceId;
 
+        // Used by SubscriptionController to get an access token from the cache.
         public static async Task<string> GetAccessTokenAsync()
         {        
             string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
@@ -37,6 +42,7 @@ namespace GraphWebhooks.Helpers
             }
         }
 
+        // Used by NotificationController (which is not authenticated) to get an access token from the cache.
         public static async Task<string> GetAccessTokenForSubscriptionAsync(string userObjectId, string tenantId)
         {
             string authority = $"{ aadInstance }/{ tenantId }";

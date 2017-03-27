@@ -4,7 +4,6 @@
  */
 
 using System;
-using System.Web;
 using System.Web.Mvc;
 using GraphWebhooks.Models;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -75,17 +74,15 @@ namespace GraphWebhooks.Controllers
                     Subscription = JsonConvert.DeserializeObject<Subscription>(stringResult)
                 };
 
-                // This app temporarily stores the current subscription ID, client state, user object ID, and tenant ID. 
-                // These are required so the NotificationController, which is not authenticated, can retrieve an access token from the cache and validate the subscription.
+                // This sample temporarily stores the current subscription ID, client state, user object ID, and tenant ID. 
+                // This info is required so the NotificationController, which is not authenticated, can retrieve an access token from the cache and validate the subscription.
                 // Production apps typically use some method of persistent storage.
-                HttpRuntime.Cache.Insert("subscriptionId_" + viewModel.Subscription.Id,
-                    Tuple.Create(
-                        viewModel.Subscription.ClientState,
-                        ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value,
-                        ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value),
-                    null, DateTime.MaxValue, new TimeSpan(24, 0, 0), System.Web.Caching.CacheItemPriority.NotRemovable, null);
+                SubscriptionInfo.SaveSubscriptionInfo(viewModel.Subscription.Id,
+                    viewModel.Subscription.ClientState,
+                    ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value,
+                    ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value);
 
-                // This sample saves the current subscription ID, so we can delete it later.
+                // This sample just saves the current subscription ID to the session so we can delete it later.
                 Session["SubscriptionId"] = viewModel.Subscription.Id;
                 return View("Subscription", viewModel);
             }

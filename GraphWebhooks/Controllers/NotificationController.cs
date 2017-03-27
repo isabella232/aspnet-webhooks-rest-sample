@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Mvc;
 using GraphWebhooks.Models;
 using GraphWebhooks.SignalR;
@@ -15,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace GraphWebhooks.Controllers
 {
@@ -22,6 +22,7 @@ namespace GraphWebhooks.Controllers
     {
         public ActionResult LoadView()
         {
+            ViewBag.CurrentUserId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
             return View("Notification");
         }
 
@@ -50,21 +51,22 @@ namespace GraphWebhooks.Controllers
                         if (jsonObject != null)
                         {
 
-                            // Notifications are sent in a 'value' array. 
-                            // Events that are registered for the same notification endpoint and that occur within a short timespan might be bundled.
+                            // Notifications are sent in a 'value' array. The array might contain multiple notifications for events that are
+                            // registered for the same notification endpoint, and that occur within a short timespan.
                             JArray value = JArray.Parse(jsonObject["value"].ToString());
                             foreach (var notification in value)
                             {
                                 Notification current = JsonConvert.DeserializeObject<Notification>(notification.ToString());
 
                                 // Check client state to verify the message is from Microsoft Graph. 
-                                var subscriptionParams = HttpRuntime.Cache.Get("subscriptionId_" + current.SubscriptionId) as Tuple<string, string, string>;
+                                SubscriptionInfo subscription = SubscriptionInfo.GetSubscriptionInfo(current.SubscriptionId);
 
                                 // This sample only works with subscriptions that are still cached.
-                                if (subscriptionParams != null)
+                                if (subscription != null)
                                 {
-                                    if (current.ClientState == subscriptionParams.Item1)
+                                    if (current.ClientState == subscription.ClientState)
                                     {
+
                                         // Just keep the latest notification for each resource.
                                         // No point pulling data more than once.
                                         notifications[current.Resource] = current;
@@ -74,6 +76,7 @@ namespace GraphWebhooks.Controllers
                             
                             if (notifications.Count > 0)
                             {
+
                                 // Query for the changed messages. 
                                 await GetChangedMessagesAsync(notifications.Values);
                             }
@@ -94,16 +97,17 @@ namespace GraphWebhooks.Controllers
         // A production application would typically queue a background job for reliability.
         public async Task GetChangedMessagesAsync(IEnumerable<Notification> notifications)
         {
-            List<Message> messages = new List<Message>();
+            List<MessageViewModel> messages = new List<MessageViewModel>();
             string serviceRootUrl = "https://graph.microsoft.com/v1.0/";
             foreach (var notification in notifications)
             {
-                var subscriptionParams = HttpRuntime.Cache.Get("subscriptionId_" + notification.SubscriptionId) as Tuple<string, string, string>;
+                SubscriptionInfo subscription = SubscriptionInfo.GetSubscriptionInfo(notification.SubscriptionId);
                 string accessToken;
                 try
                 {
+
                     // Get the access token for the subscribed user.
-                    accessToken = await AuthHelper.GetAccessTokenForSubscriptionAsync(subscriptionParams.Item2, subscriptionParams.Item3);
+                    accessToken = await AuthHelper.GetAccessTokenForSubscriptionAsync(subscription.UserId, subscription.TenantId);
                 }
                 catch (Exception e)
                 {
@@ -125,7 +129,9 @@ namespace GraphWebhooks.Controllers
                     string type = notification.ResourceData.ODataType;
                     if (type == "#Microsoft.Graph.Message")
                     {
-                        messages.Add(JsonConvert.DeserializeObject<Message>(stringResult));
+                        Message message = JsonConvert.DeserializeObject<Message>(stringResult);
+                        MessageViewModel messageViewModel = new MessageViewModel(message, subscription.UserId);
+                        messages.Add(messageViewModel);
                     }
                 }
             }
