@@ -77,7 +77,7 @@ namespace GraphWebhooks.Controllers
                 // This sample temporarily stores the current subscription ID, client state, user object ID, and tenant ID. 
                 // This info is required so the NotificationController, which is not authenticated, can retrieve an access token from the cache and validate the subscription.
                 // Production apps typically use some method of persistent storage.
-                SubscriptionInfo.SaveSubscriptionInfo(viewModel.Subscription.Id,
+                SubscriptionStore.SaveSubscriptionInfo(viewModel.Subscription.Id,
                     viewModel.Subscription.ClientState,
                     ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value,
                     ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value);

@@ -59,7 +59,7 @@ namespace GraphWebhooks.Controllers
                                 Notification current = JsonConvert.DeserializeObject<Notification>(notification.ToString());
 
                                 // Check client state to verify the message is from Microsoft Graph. 
-                                SubscriptionInfo subscription = SubscriptionInfo.GetSubscriptionInfo(current.SubscriptionId);
+                                SubscriptionStore subscription = SubscriptionStore.GetSubscriptionInfo(current.SubscriptionId);
 
                                 // This sample only works with subscriptions that are still cached.
                                 if (subscription != null)
@@ -101,7 +101,7 @@ namespace GraphWebhooks.Controllers
             string serviceRootUrl = "https://graph.microsoft.com/v1.0/";
             foreach (var notification in notifications)
             {
-                SubscriptionInfo subscription = SubscriptionInfo.GetSubscriptionInfo(notification.SubscriptionId);
+                SubscriptionStore subscription = SubscriptionStore.GetSubscriptionInfo(notification.SubscriptionId);
                 string accessToken;
                 try
                 {

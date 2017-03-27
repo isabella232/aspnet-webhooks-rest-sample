@@ -8,14 +8,14 @@ using System.Web;
 
 namespace GraphWebhooks.Helpers
 {
-    public class SubscriptionInfo
+    public class SubscriptionStore
     {
         public string SubscriptionId { get; set; }
         public string ClientState { get; set; }
         public string UserId { get; set; }
         public string TenantId { get; set; }
 
-        private SubscriptionInfo(string subscriptionId, Tuple<string, string, string> parameters)
+        private SubscriptionStore(string subscriptionId, Tuple<string, string, string> parameters)
         {
             SubscriptionId = subscriptionId;
             ClientState = parameters.Item1;
@@ -33,10 +33,10 @@ namespace GraphWebhooks.Helpers
                 null, DateTime.MaxValue, new TimeSpan(24, 0, 0), System.Web.Caching.CacheItemPriority.NotRemovable, null);
         }
 
-        public static SubscriptionInfo GetSubscriptionInfo(string subscriptionId)
+        public static SubscriptionStore GetSubscriptionInfo(string subscriptionId)
         {
             Tuple<string, string, string> subscriptionParams = HttpRuntime.Cache.Get("subscriptionId_" + subscriptionId) as Tuple<string, string, string>;
-            return new SubscriptionInfo(subscriptionId, subscriptionParams);
+            return new SubscriptionStore(subscriptionId, subscriptionParams);
         }
     }
 }
