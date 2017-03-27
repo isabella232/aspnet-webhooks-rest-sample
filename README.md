@@ -154,7 +154,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 - [`SubscriptionContoller.cs`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/Controllers/SubscriptionController.cs) Creates and receives webhook subscriptions.
  
 **Models**  
-- [`Message.cs`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/Models/Message.cs) Represents an Outlook mail message. 
+- [`Message.cs`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/Models/Message.cs) Represents an Outlook mail message. Also defines the **MessageViewModel** that represents the data displayed in the Notification view.
 - [`Notification.cs`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/Models/Notification.cs) Represents a change notification. 
 - [`Subscription.cs`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/Models/Subscription.cs) Represents a webhook subscription. Also defines the **SubscriptionViewModel** that represents the data displayed in the Subscription view. 
 
@@ -167,7 +167,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 - [`Web.config`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/Web.config) Contains values used for authentication and authorization. 
 - [`App_Start/Startup.Auth.cs`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/App_Start/Startup.Auth.cs) and [`Helpers/AuthHelper`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/Helpers/AuthHelper.cs) Contain code used for authentication and authorization. The sample uses [OpenID Connect](https://msdn.microsoft.com/en-us/library/azure/dn645541.aspx) and [Active Directory Authentication Library .NET (v3)](https://github.com/AzureAD/azure-activedirectory-library-for-dotnet) to authenticate and authorize the user.
 - [`TokenStorage/SampleTokenCache.cs`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/TokenStorage/SampleTokenCache.cs) Sample implementation of a token cache that uses HttpRuntime.Cache (so that token information is available when a notification is received). Production apps will typically use some method of persistent storage. 
-
+- [`Helpers/SubscriptionInfo.cs`](https://github.com/microsoftgraph/aspnet-webhooks-rest-sample/blob/master/GraphWebhooks/Helpers/SubscriptionInfo.cs) Access layer for stored subscription information. The sample implementation temporarily stores the info in HttpRuntime.Cache. Production apps will typically use some method of persistent storage.
 
 ## Troubleshooting
 
