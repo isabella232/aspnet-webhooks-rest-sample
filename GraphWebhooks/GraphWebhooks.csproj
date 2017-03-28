@@ -177,7 +177,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\SubscriptionInfo.cs" />
+    <Compile Include="Helpers\SubscriptionStore.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\Notification.cs" />
     <Compile Include="Models\Subscription.cs" />
@@ -215,12 +215,12 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Account\SignOutCallback.cshtml" />
     <Content Include="Views\Subscription\Index.cshtml" />
     <Content Include="Views\Notification\Notification.cshtml" />
     <Content Include="Views\Subscription\Subscription.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Views\Account\" />
     <Folder Include="Views\Error\" />
   </ItemGroup>
   <ItemGroup>

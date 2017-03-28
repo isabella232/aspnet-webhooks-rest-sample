@@ -30,8 +30,8 @@ namespace GraphWebhooks.Controllers
         // Remove all cache entries for this user and send an OpenID Connect sign-out request.
         public void SignOut()
         {
-            string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-            string tenantId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
+            string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+            string tenantId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
             string authority = $"{ Startup.AadInstance }/{ tenantId }";
 
             AuthenticationContext authContext = new AuthenticationContext(
