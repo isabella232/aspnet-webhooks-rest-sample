@@ -10,7 +10,7 @@ namespace GraphWebhooks.SignalR
 {
     public class NotificationService : PersistentConnection
     {
-        public void SendNotificationToClient(List<Message> messages)
+        public void SendNotificationToClient(List<MessageViewModel> messages)
         {
             var hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
             if (hubContext != null)

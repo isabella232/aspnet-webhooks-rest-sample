@@ -1,6 +1,10 @@
-﻿using System;
+﻿/*
+ *  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the source repository root for complete license information.
+ */
+
+ using System;
 using System.Configuration;
-using System.IdentityModel.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin.Security;
@@ -8,14 +12,16 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Owin;
+using GraphWebhooks.TokenStorage;
 
 namespace GraphWebhooks
 {
     public partial class Startup
     {
-        public string ClientId = ConfigurationManager.AppSettings["ida:ClientId"];
-        public string ClientSecret = ConfigurationManager.AppSettings["ida:ClientSecret"];
-        public string Authority = string.Format(System.Globalization.CultureInfo.InvariantCulture, ConfigurationManager.AppSettings["ida:AADInstance"], "common");
+        public static string ClientId = ConfigurationManager.AppSettings["ida:ClientId"];
+        public static string ClientSecret = ConfigurationManager.AppSettings["ida:ClientSecret"];
+        public static string AadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+        public static string GraphResourceId = ConfigurationManager.AppSettings["ida:ResourceId"];
 
         public void ConfigureAuth(IAppBuilder app)
         {
@@ -27,7 +33,7 @@ namespace GraphWebhooks
                 new OpenIdConnectAuthenticationOptions
                 {
                     ClientId = ClientId,
-                    Authority = Authority,
+                    Authority = $"{ AadInstance }/common",
                     TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
                     {
                         // instead of using the default validation (validating against a single issuer value, as we do in line of business apps), 
@@ -39,14 +45,24 @@ namespace GraphWebhooks
                     },
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
-                        // If there is a code in the OpenID Connect response, redeem it for an access token and refresh token, and store those away.
                         AuthorizationCodeReceived = (context) =>
                         {
+
+                            // If there is a code in the OpenID Connect response, redeem it for an access token and store it away.
                             var code = context.Code;
-                            string userObjectId = context.AuthenticationTicket.Identity.FindFirst(ClaimTypes.NameIdentifier).Value;
-                            ClientCredential credential = new ClientCredential(ClientId, ClientSecret);
-                            AuthenticationContext authContext = new AuthenticationContext(Authority);
-                            authContext.AcquireTokenByAuthorizationCode(code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, "https://graph.microsoft.com/");
+                            string userObjectId = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+                            string tenantId = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
+                            string authority = $"{ AadInstance }/{ tenantId }";
+
+                            AuthenticationContext authContext = new AuthenticationContext(
+                                authority, 
+                                new SampleTokenCache(userObjectId));
+
+                            authContext.AcquireTokenByAuthorizationCodeAsync(
+                                code, 
+                                new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)),
+                                new ClientCredential(ClientId, ClientSecret), 
+                                GraphResourceId);
 
                             return Task.FromResult(0);
                         },
@@ -66,8 +82,9 @@ namespace GraphWebhooks
                             // Suppress the exception if you don't want to see the error.
                             context.HandleResponse();
                             string appBaseUrl = context.Request.Scheme + "://" + context.Request.Host + context.Request.PathBase;
-                            context.Response.Redirect(appBaseUrl + "/subscription/index");
-                            
+                            string message = context.Exception.Message;
+                            context.Response.Redirect(appBaseUrl + $"/error/index?message={ message }");
+
                             return Task.FromResult(0);
                         }
                     }

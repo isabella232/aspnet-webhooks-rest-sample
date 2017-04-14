@@ -5,16 +5,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Mvc;
 using GraphWebhooks.Models;
 using GraphWebhooks.SignalR;
-using GraphWebhooks.Utils;
+using GraphWebhooks.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace GraphWebhooks.Controllers
 {
@@ -22,10 +22,11 @@ namespace GraphWebhooks.Controllers
     {
         public ActionResult LoadView()
         {
+            ViewBag.CurrentUserId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
             return View("Notification");
         }
 
-        // The notificationUrl endpoint that's registered with the webhook subscription.
+        // The `notificationUrl` endpoint that's registered with the webhook subscription.
         [HttpPost]
         public async Task<ActionResult> Listen()
         {
@@ -50,18 +51,22 @@ namespace GraphWebhooks.Controllers
                         if (jsonObject != null)
                         {
 
-                            // Notifications are sent in a 'value' array.
+                            // Notifications are sent in a 'value' array. The array might contain multiple notifications for events that are
+                            // registered for the same notification endpoint, and that occur within a short timespan.
                             JArray value = JArray.Parse(jsonObject["value"].ToString());
                             foreach (var notification in value)
                             {
                                 Notification current = JsonConvert.DeserializeObject<Notification>(notification.ToString());
 
                                 // Check client state to verify the message is from Microsoft Graph. 
-                                var subscriptionParams = (Tuple<string, string>)HttpRuntime.Cache.Get("subscriptionId_" + current.SubscriptionId);
-                                if (subscriptionParams != null)
+                                SubscriptionStore subscription = SubscriptionStore.GetSubscriptionInfo(current.SubscriptionId);
+
+                                // This sample only works with subscriptions that are still cached.
+                                if (subscription != null)
                                 {
-                                    if (current.ClientState == subscriptionParams.Item1)
+                                    if (current.ClientState == subscription.ClientState)
                                     {
+
                                         // Just keep the latest notification for each resource.
                                         // No point pulling data more than once.
                                         notifications[current.Resource] = current;
@@ -71,6 +76,7 @@ namespace GraphWebhooks.Controllers
                             
                             if (notifications.Count > 0)
                             {
+
                                 // Query for the changed messages. 
                                 await GetChangedMessagesAsync(notifications.Values);
                             }
@@ -87,26 +93,29 @@ namespace GraphWebhooks.Controllers
             }
         }
 
-        // Get information about the changed messages and send to browser via SignalR.
+        // Get information about the changed messages and send to the browser via SignalR.
         // A production application would typically queue a background job for reliability.
-        [HandleAdalException]
         public async Task GetChangedMessagesAsync(IEnumerable<Notification> notifications)
         {
-            List<Message> messages = new List<Message>();
+            List<MessageViewModel> messages = new List<MessageViewModel>();
             string serviceRootUrl = "https://graph.microsoft.com/v1.0/";
-            
-            // Create the client that will send the request.
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
             foreach (var notification in notifications)
             {
+                SubscriptionStore subscription = SubscriptionStore.GetSubscriptionInfo(notification.SubscriptionId);
+                string accessToken;
+                try
+                {
 
-                // Get the access token and add it to the request.
-                var subscriptionParams = (Tuple<string, string>)HttpRuntime.Cache.Get("subscriptionId_" + notification.SubscriptionId);
-                string refreshToken = subscriptionParams.Item2;
-                string accessToken = await AuthHelper.GetAccessTokenFromRefreshTokenAsync(refreshToken);
-                
+                    // Get the access token for the subscribed user.
+                    accessToken = await AuthHelper.GetAccessTokenForSubscriptionAsync(subscription.UserId, subscription.TenantId);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, serviceRootUrl + notification.Resource);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
@@ -117,10 +126,12 @@ namespace GraphWebhooks.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     string stringResult = await response.Content.ReadAsStringAsync();
-                    var type = notification.ResourceData.ODataType;
+                    string type = notification.ResourceData.ODataType;
                     if (type == "#Microsoft.Graph.Message")
                     {
-                        messages.Add(JsonConvert.DeserializeObject<Message>(stringResult));
+                        Message message = JsonConvert.DeserializeObject<Message>(stringResult);
+                        MessageViewModel messageViewModel = new MessageViewModel(message, subscription.UserId);
+                        messages.Add(messageViewModel);
                     }
                 }
             }

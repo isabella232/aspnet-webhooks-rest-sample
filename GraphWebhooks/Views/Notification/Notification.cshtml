@@ -1,43 +1,44 @@
 ﻿<!--  Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
         See LICENSE in the source repository root for complete license information. -->
 
-@model GraphWebhooks.Models.Message
+@model GraphWebhooks.Models.MessageViewModel
 
 @{
     ViewBag.Title = "Notification";
+    string CurrentUser = ViewBag.CurrentUserId;
 }
 
 @section Scripts {
-    @Scripts.Render("~/Scripts/jquery.signalR-2.2.0.min.js");
-    @Scripts.Render("~/signalr/hubs");
-
+    <script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.1.min.js"></script>
+    <script src="/signalr/hubs"></script>
     <script>
-var connection = $.hubConnection();
-var hub = connection.createHubProxy("NotificationHub");
-hub.on("showNotification", function (messages) {
-    $.each(messages, function (index, value) {     // Iterate through the message collection
-        var message = value;                       // Get current message
+        var connection = $.hubConnection();
+        var hub = connection.createHubProxy("NotificationHub");
+        hub.on("showNotification", function (messages) {
+            $.each(messages, function (index, current) {                       // Iterate through the message collection
+                if (current.SubscribedUser === '@CurrentUser'.toString()) {    // Don't show messages for different users
+                    var table = $("<table></table>");
+                    var header = $("<th>Message</th>").appendTo(table);
+                    var message = current.Message;
+                    for (prop in message) {                                    // Iterate through message properties
+                        var property = message[prop];
+                        var row = $("<tr></tr>");
 
-        var table = $("<table></table>");
-        var header = $("<th>Message</th>").appendTo(table);
-
-        for (prop in message) {                    // Iterate through message properties
-            var property = message[prop];
-            var row = $("<tr></tr>");
-
-            $("<td></td>").text(prop).appendTo(row);
-            $("<td></td>").text(property).appendTo(row);
-            table.append(row);
-        }
-        $("#message").append(table);
-        $("#message").append("<br />");
-    });
-});
-connection.start();
+                        $("<td></td>").text(prop).appendTo(row);
+                        $("<td></td>").text(property).appendTo(row);
+                        table.append(row);
+                    }
+                    $("#message").append(table);
+                    $("#message").append("<br />");
+                }
+            });
+        });
+        connection.start();
     </script>
 }
 <h2>Messages</h2>
 <p>You'll get a notification when your user receives an email. The messages display below.</p>
+<p><b>Note:</b> It may take several seconds for the page to update after the user receives a message.</p>
 <br />
 <div id="message"></div>
 <div>
