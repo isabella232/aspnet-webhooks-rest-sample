@@ -57,7 +57,7 @@ namespace GraphWebhooks.Controllers
                 NotificationUrl = ConfigurationManager.AppSettings["ida:NotificationUrl"],
                 ClientState = Guid.NewGuid().ToString(),
                 //ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 4230, 0) // current maximum timespan for messages
-                ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 10, 0)
+                ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 15, 0) // shorter duration useful for testing
             };
 
             string contentString = JsonConvert.SerializeObject(subscription, 

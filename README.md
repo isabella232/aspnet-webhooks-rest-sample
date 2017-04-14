@@ -42,7 +42,7 @@ This app uses the Azure AD endpoint, so you'll register it in the [Azure Portal]
 
 2. Choose **Azure Active Directory** in the left-hand navigation pane.
 
-3. Choose **App registrations**, and then choose **Add**.  
+3. Choose **App registrations**, and then choose **New application registration**.  
 
    a. Enter a friendly name for the application.
 
@@ -58,7 +58,7 @@ This app uses the Azure AD endpoint, so you'll register it in the [Azure Portal]
 
 6. To enable multi-tenanted support for the app, choose **Settings** > **Properties** and set **Multi-tenanted** to **Yes**.
 
-7. Configure Permissions for your application:  
+7. Configure permissions for your application:  
 
    a. Choose **Settings** > **Required permissions** > **Add**.
   
@@ -125,6 +125,10 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 1. Make sure that the ngrok console is still running, then press F5 to build and run the solution in debug mode. 
 
+   >If you get errors while installing packages, make sure the local path where you placed the solution is not too long/deep. Moving the solution closer to the root drive resolves this issue.
+   
+   >If you update any dependencies for this sample, **do not update** System.IdentityModel.Tokens.Jwt to v5, which is designed for use with .NET Core.
+
 ### Use the app
  
 1. Sign in with your work or school account. 
@@ -135,6 +139,8 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 1. Choose the **Create subscription** button. The **Subscription** page loads with information about the subscription.
 
+   >This sample sets the subscription expiration to 15 minutes for testing purposes.
+
 	![App page showing properties of the new subscription](readme-images/Page2.PNG)
 	
 1. Choose the **Watch for notifications** button.
@@ -144,8 +150,6 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 	![App page showing properties of the new message](readme-images/Page3.PNG)
 
 1. Choose the **Delete subscription and sign out** button. 
-
->If you update any dependencies for this sample, **do not update** System.IdentityModel.Tokens.Jwt to v5, which is designed for use with .NET Core.
 
 ## Key components of the sample
 
@@ -176,6 +180,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 | You get a 403 Forbidden response when you attempt to create a subscription. | Make sure that your app registration includes the **Read user mail** delegated permission for Microsoft Graph (as described in the [Register the app](#register-the-app) section). This permission must be set before your user gives consent. Otherwise you'll need to register a new app, add the `prompt=consent` parameter for the `/authorize` request, or remove the app for the user at [https://myapps.microsoft.com/](https://myapps.microsoft.com/). |  
 | You do not receive notifications. | If you're using ngrok, you can use the web interface (http://127.0.0.1:4040) to see whether the notification is being received. If you're not using ngrok, monitor the network traffic using the tools your hosting service provides, or try using ngrok.<br />If Microsoft Graph is not sending notifications, please open a [Stack Overflow](https://stackoverflow.com/questions/tagged/MicrosoftGraph) issue tagged *[MicrosoftGraph]*. Include the subscription ID and the time it was created.<br /><br />Known issue with the sample UI: Occasionally the notification is received, and the retrieved message is sent to NotificationService, but the SignalR client in this sample does not update. When this happens, it's usually the first notification after the subscription is created. |  
 | You get a *Subscription validation request timed out* response. | This indicates that Microsoft Graph did not receive a validation response within the expected timeframe (about 10 seconds).<br /><br />If you're using ngrok, make sure that you used your project's HTTP port for the tunnel (not HTTPS). |  
+| You get errors while installing packages. | Make sure the local path where you placed the solution is not too long/deep. Moving the solution closer to the root drive resolves this issue. |
 | The app opens to a *Server Error in '/' Application. The resource cannot be found.* browser page. | Make sure that a CSHTML view file isn't the active tab when you run the app from Visual Studio. |
 
 <a name="contributing"></a>
