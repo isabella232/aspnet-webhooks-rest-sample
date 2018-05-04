@@ -70,8 +70,8 @@ namespace GraphWebhooks.Helpers
         {
             if (httpClient != null)
             {
-                httpClient = null;
                 httpClient.Dispose();
+                httpClient = null;
             }
 
             httpClient = new HttpClient();
