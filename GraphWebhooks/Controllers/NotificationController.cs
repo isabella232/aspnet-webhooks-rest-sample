@@ -114,13 +114,11 @@ namespace GraphWebhooks.Controllers
                     throw e;
                 }
 
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, serviceRootUrl + notification.Resource);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 // Send the 'GET' request.
-                HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(continueOnCapturedContext: false);
+                GraphHttpClient graphHttpClient = new GraphHttpClient(accessToken);
+                HttpResponseMessage response = await graphHttpClient.SendAsync(request);
 
                 // Get the messages from the JSON response.
                 if (response.IsSuccessStatusCode)
