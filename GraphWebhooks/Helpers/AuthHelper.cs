@@ -3,10 +3,10 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
+using GraphWebhooks.TokenStorage;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using GraphWebhooks.TokenStorage;
 
 namespace GraphWebhooks.Helpers
 {

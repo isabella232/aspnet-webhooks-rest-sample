@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
+﻿using GraphWebhooks.Models;
 using Microsoft.AspNet.SignalR;
-using GraphWebhooks.Models;
+using System.Collections.Generic;
 
 namespace GraphWebhooks.SignalR
 {

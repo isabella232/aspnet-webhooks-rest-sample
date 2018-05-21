@@ -3,9 +3,8 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
-using System;
 using Newtonsoft.Json;
-using System.Collections.Generic;
+using System;
 
 namespace GraphWebhooks.Models
 {

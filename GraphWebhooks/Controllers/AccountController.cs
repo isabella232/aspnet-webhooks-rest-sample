@@ -3,14 +3,14 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
- using System.Web;
-using System.Web.Mvc;
+using GraphWebhooks.TokenStorage;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
-using Microsoft.Owin.Security;
 using System.Security.Claims;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using GraphWebhooks.TokenStorage;
+using System.Web;
+using System.Web.Mvc;
 
 namespace GraphWebhooks.Controllers
 {

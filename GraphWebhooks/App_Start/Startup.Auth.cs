@@ -3,16 +3,16 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
- using System;
-using System.Configuration;
-using System.Threading.Tasks;
-using System.Web;
+using GraphWebhooks.TokenStorage;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Owin;
-using GraphWebhooks.TokenStorage;
+using System;
+using System.Configuration;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace GraphWebhooks
 {

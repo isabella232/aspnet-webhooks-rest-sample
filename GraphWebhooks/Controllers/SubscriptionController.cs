@@ -3,18 +3,16 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
-using System;
-using System.Web.Mvc;
+using GraphWebhooks.Helpers;
 using GraphWebhooks.Models;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json;
+using System;
 using System.Configuration;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using GraphWebhooks.Helpers;
 using System.Security.Claims;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace GraphWebhooks.Controllers
 {
