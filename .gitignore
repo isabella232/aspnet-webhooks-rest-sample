@@ -237,3 +237,6 @@ _Pvt_Extensions
 
 # Visual Studio Code settings
 .vscode/
+
+# File with app ID and secret - prevent accidental commit of this info
+PrivateSettings.config

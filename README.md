@@ -107,11 +107,13 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 1. Expose a public HTTPS notification endpoint. It can run on a service such as Microsoft Azure, or you can create a proxy web server by [using ngrok](#ngrok) or a similar tool.
 
+1. Make a copy of **GraphWebHooks/PrivateSettings.example.config** in the same directory. Name the copy **PrivateSettings.config**.
+
 1. Open **GraphWebhooks.sln** in the sample files.
 
     > **Note:** You may be prompted to trust certificates for localhost.
 
-1. In Solution Explorer, open the **Web.config** file in the root directory of the project.
+1. In Solution Explorer, open the **PrivateSettings.config** file in the root directory of the project.
     - For the **ClientId** key, replace *ENTER_YOUR_APP_ID* with the application ID of your registered Azure application.
     - For the **ClientSecret** key, replace *ENTER_YOUR_SECRET* with the key of your registered Azure application.
     - For the **NotificationUrl** key, replace *ENTER_YOUR_URL* with the HTTPS URL. Keep the */notification/listen* portion. If you're using ngrok, use the HTTPS URL that you copied. The value will look something like this:
