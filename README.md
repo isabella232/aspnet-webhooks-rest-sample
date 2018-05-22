@@ -4,7 +4,7 @@ Subscribe for [Microsoft Graph webhooks](https://developer.microsoft.com/en-us/g
 
 This ASP.NET MVC sample shows how to start getting notifications from Microsoft Graph. Microsoft Graph provides a unified API endpoint to access data from the Microsoft cloud.
 
->This sample uses the Azure AD endpoint to obtain an access token for work or school accounts. The sample uses a user-delegated permission, but messages, events, and contacts resources also support application (app-only) permissions. Currently, only drive root item resources support subscriptions for personal accounts. Watch the docs as we continue to add support for these and other features.
+> This sample uses the Azure AD V2 endpoint to obtain an access token for work or school accounts. The sample uses a user-delegated permission, but messages, events, and contacts resources also support application (app-only) permissions. Currently, only drive root item resources support subscriptions for personal accounts. Watch the docs as we continue to add support for these and other features.
 
 The following are common tasks that an application performs with webhooks subscriptions:
 
@@ -26,7 +26,7 @@ This sample subscribes to the `me/mailFolders('Inbox')/messages` resource for `c
 
 To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
-- Visual Studio 2015 or later installed on your development computer.
+- Visual Studio 2017 installed on your development computer.
 - A [work or school account](http://dev.office.com/devprogram).
 - The application ID and key from the application that you [register on the Application Registration Portal](#register-the-app).
 - A public HTTPS endpoint to receive and send HTTP requests. You can host this on Microsoft Azure or another service, or you can [use ngrok](#ngrok) or a similar tool while testing.
@@ -98,7 +98,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 1. Make sure that the ngrok console is still running, then press F5 to build and run the solution in debug mode.
     > **Note:** If you get errors while installing packages, make sure the local path where you placed the solution is not too long/deep. Moving the solution closer to the root drive resolves this issue.
     >
-    > If you update any dependencies for this sample, **do not update** `System.IdentityModel.Tokens.Jwt` to v5, which is designed for use with .NET Core.
+    > If you update any dependencies for this sample, **do not update** `System.IdentityModel.Tokens.Jwt` to v5, which is designed for use with .NET Core. Also do not update any of the `Microsoft.Owin` libraries to v4.
 
 ### Use the app
 
@@ -131,9 +131,9 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 ### Models
 
-- [`Message.cs`](GraphWebhooks/Models/Message.cs) Represents an Outlook mail message. Also defines the **MessageViewModel** that represents the data displayed in the Notification view.
+- [`Message.cs`](GraphWebhooks/Models/Message.cs) Defines the **MessageViewModel** that represents the data displayed in the Notification view.
 - [`Notification.cs`](GraphWebhooks/Models/Notification.cs) Represents a change notification.
-- [`Subscription.cs`](GraphWebhooks/Models/Subscription.cs) Represents a webhook subscription. Also defines the **SubscriptionViewModel** that represents the data displayed in the Subscription view.
+- [`Subscription.cs`](GraphWebhooks/Models/Subscription.cs) Defines the **SubscriptionViewModel** that represents the data displayed in the Subscription view.
 
 ### Views
 
@@ -144,10 +144,9 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 ### Other
 
 - [`Web.config`](GraphWebhooks/Web.config) Contains values used for authentication and authorization.
-- [`App_Start/Startup.Auth.cs`](GraphWebhooks/App_Start/Startup.Auth.cs) and [`Helpers/AuthHelper.cs`](GraphWebhooks/Helpers/AuthHelper.cs) Contain code used for authentication and authorization. The sample uses [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-openid-connect-code) and [Active Directory Authentication Library .NET (v3)](https://github.com/AzureAD/azure-activedirectory-library-for-dotnet) to authenticate and authorize the user.
-- [`TokenStorage/SampleTokenCache.cs`](GraphWebhooks/TokenStorage/SampleTokenCache.cs) Sample implementation of a token cache that uses HttpRuntime.Cache (so that token information is available when a notification is received). Production apps will typically use some method of persistent storage.
+- [`App_Start/Startup.Auth.cs`](GraphWebhooks/App_Start/Startup.Auth.cs) Contains code used for authentication and authorization. The sample uses [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-openid-connect-code) and [Microsoft Authentication Library (MSAL)](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) to authenticate and authorize the user.
+- [`TokenStorage/SampleTokenCache.cs`](GraphWebhooks/TokenStorage/SampleTokenCache.cs) Sample implementation of a token cache that uses System.Runtime.Caching (so that token information is available when a notification is received). Production apps will typically use some method of persistent storage.
 - [`Helpers/SubscriptionStore.cs`](GraphWebhooks/Helpers/SubscriptionStore.cs) Access layer for stored subscription information. The sample implementation temporarily stores the info in HttpRuntime.Cache. Production apps will typically use some method of persistent storage.
-- [`Helpers/GraphHttpClient.cs`](GraphWebhooks/Helpers/GraphHttpClient.cs) Http client wrapper implementation with retries on recommended transient errors codes from Graph Webhooks service. It also demonstrates the required information needed to be logged in the client code to contact Microsoft support.
 
 ## Troubleshooting
 
