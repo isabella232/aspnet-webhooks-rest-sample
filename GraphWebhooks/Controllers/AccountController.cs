@@ -4,7 +4,6 @@
  */
 
 using GraphWebhooks.TokenStorage;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
@@ -31,13 +30,10 @@ namespace GraphWebhooks.Controllers
         public void SignOut()
         {
             string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-            string tenantId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
-            string authority = $"{ Startup.AadInstance }/{ tenantId }";
 
-            AuthenticationContext authContext = new AuthenticationContext(
-                authority,
-                new SampleTokenCache(userObjectId));
-            authContext.TokenCache.Clear();
+            var tokenCache = new SampleTokenCache(userObjectId);
+            tokenCache.Clear();
+
             HttpContext.GetOwinContext().Authentication.SignOut(
                 OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
         }

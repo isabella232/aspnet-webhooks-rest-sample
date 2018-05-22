@@ -104,9 +104,11 @@ namespace GraphWebhooks.Controllers
                 string accessToken;
                 try
                 {
-
+                    // Extract base URL from client state to use as redirect
+                    // url for token request
+                    string baseUrl = notification.ClientState.Split('+')[1];
                     // Get the access token for the subscribed user.
-                    accessToken = await AuthHelper.GetAccessTokenForSubscriptionAsync(subscription.UserId, subscription.TenantId);
+                    accessToken = await AuthHelper.GetAccessTokenForSubscriptionAsync(subscription.UserId, baseUrl);
                 }
                 catch (Exception e)
                 {

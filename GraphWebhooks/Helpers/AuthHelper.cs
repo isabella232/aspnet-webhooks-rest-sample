@@ -4,7 +4,8 @@
  */
 
 using GraphWebhooks.TokenStorage;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Identity.Client;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -12,56 +13,29 @@ namespace GraphWebhooks.Helpers
 {
     class AuthHelper
     {
-        private static SampleTokenCache tokenCache;
-        private static string aadInstance = Startup.AadInstance;
         private static string appId = Startup.ClientId;
         private static string appSecret = Startup.ClientSecret;
-        private static string graphResourceId = Startup.GraphResourceId;
+        public static string[] scopes = Startup.Scopes;
 
         // Used by SubscriptionController to get an access token from the cache.
-        public static async Task<string> GetAccessTokenAsync()
+        public static async Task<string> GetAccessTokenAsync(string redirect)
         {        
             string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-            string tenantId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
-            string authority = $"{ aadInstance }/{ tenantId }";
-            tokenCache = new SampleTokenCache(userObjectId);
 
-            AuthenticationContext authContext = new AuthenticationContext(authority, tokenCache);
-            try
-            {
-                AuthenticationResult authResult = await authContext.AcquireTokenSilentAsync(
-                    graphResourceId,
-                    new ClientCredential(appId, appSecret),
-                    new UserIdentifier(userObjectId, UserIdentifierType.UniqueId));
-
-                return authResult.AccessToken;
-            }
-            catch (AdalException e)
-            {
-                throw e;
-            }
+            return await GetAccessTokenForSubscriptionAsync(userObjectId, redirect);
         }
 
         // Used by NotificationController (which is not authenticated) to get an access token from the cache.
-        public static async Task<string> GetAccessTokenForSubscriptionAsync(string userObjectId, string tenantId)
+        public static async Task<string> GetAccessTokenForSubscriptionAsync(string userObjectId, string redirect)
         {
-            string authority = $"{ aadInstance }/{ tenantId }";
-            tokenCache = new SampleTokenCache(userObjectId);
+            var tokenCache = new SampleTokenCache(userObjectId);
 
-            AuthenticationContext authContext = new AuthenticationContext(authority, tokenCache);
-            try
-            {
-                AuthenticationResult authResult = await authContext.AcquireTokenSilentAsync(
-                    graphResourceId,
-                    new ClientCredential(appId, appSecret),
-                    new UserIdentifier(userObjectId, UserIdentifierType.UniqueId));
+            var cca = new ConfidentialClientApplication(appId, redirect, new ClientCredential(appSecret),
+                tokenCache.GetMsalCacheInstance(), null);
 
-                return authResult.AccessToken;
-            }
-            catch (AdalException e)
-            {
-                throw e;
-            }
+            var authResult = await cca.AcquireTokenSilentAsync(scopes, cca.Users.First());
+
+            return authResult.AccessToken;
         }
     }
 }

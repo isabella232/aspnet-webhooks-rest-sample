@@ -28,46 +28,19 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 
 - Visual Studio 2015 or later installed on your development computer.
 - A [work or school account](http://dev.office.com/devprogram).
-- The application ID and key from the application that you [register on the Azure Portal](#register-the-app).
+- The application ID and key from the application that you [register on the Application Registration Portal](#register-the-app).
 - A public HTTPS endpoint to receive and send HTTP requests. You can host this on Microsoft Azure or another service, or you can [use ngrok](#ngrok) or a similar tool while testing.
 
 ### Register the app
 
-This app uses the Azure AD endpoint, so you'll register it in the [Azure Portal](https://portal.azure.com/).
+This app uses the Azure AD v2 endpoint, so you'll register it in the [Application Registration Portal](https://apps.dev.microsoft.com).
 
-1. Sign in to the portal using your work or school account.
-
-2. Choose **Azure Active Directory** in the left-hand navigation pane.
-
-3. Choose **App registrations**, and then choose **New application registration**.
-
-   a. Enter a friendly name for the application.
-
-   b. Choose 'Web app/API' as the **Application Type**.
-
-   c. Enter `https://localhost:44300/` for the **Sign-on URL**.
-
-   d. Click **Create**.
-
-4. Choose your new application from the list of registered applications.
-
-5. Copy and store the Application ID. This value is shown in the **Essentials** pane or in **Settings** > **Properties**.
-
-6. To enable multi-tenanted support for the app, choose **Settings** > **Properties** and set **Multi-tenanted** to **Yes**.
-
-7. Configure permissions for your application:
-
-   a. Choose **Settings** > **Required permissions** > **Add**.
-
-   b. Choose **Select an API** > **Microsoft Graph**, and then click **Select**.
-
-   c. Choose **Select permissions**, scroll down to **Delegated Permissions**, choose **Read user mail**, and then click **Select**.
-
-   d. Click **Done**.
-
-8. Choose **Settings** > **Keys**. Enter a description, choose a duration for the key, and then click **Save**.
-
-9. **Important**: Copy the key value--this is your app's secret. You won't be able to access this value again after you leave this blade.
+1. Sign in to the portal with either your Microsoft account, or your work or school account.
+1. Choose **Add an app**.
+1. Enter a friendly name for the application and choose **Create application**.
+1. Locate the **Application Secrets** section and choose **Generate New Password**. Copy the password now and save it to a safe place. Once you've copied the password, click **Ok**.
+1. Locate the **Platforms** section, and choose **Add Platform**. Choose **Web**, then enter `https://localhost:44300` under **Redirect URIs**.
+1. Choose **Save** at the bottom of the page.
 
 You'll use the application ID and secret to configure the app in Visual Studio.
 
@@ -114,8 +87,8 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
     > **Note:** You may be prompted to trust certificates for localhost.
 
 1. In Solution Explorer, open the **PrivateSettings.config** file in the root directory of the project.
-    - For the **ClientId** key, replace *ENTER_YOUR_APP_ID* with the application ID of your registered Azure application.
-    - For the **ClientSecret** key, replace *ENTER_YOUR_SECRET* with the key of your registered Azure application.
+    - For the **ClientId** key, replace *ENTER_YOUR_APP_ID* with the application ID of your registered application.
+    - For the **ClientSecret** key, replace *ENTER_YOUR_SECRET* with the secret of your registered application.
     - For the **NotificationUrl** key, replace *ENTER_YOUR_URL* with the HTTPS URL. Keep the */notification/listen* portion. If you're using ngrok, use the HTTPS URL that you copied. The value will look something like this:
 
     ```xml

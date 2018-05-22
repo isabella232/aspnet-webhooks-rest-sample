@@ -5,7 +5,7 @@
 
 using GraphWebhooks.Helpers;
 using GraphWebhooks.Models;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using System;
 using System.Configuration;
@@ -30,11 +30,11 @@ namespace GraphWebhooks.Controllers
         {
             string subscriptionsEndpoint = "https://graph.microsoft.com/v1.0/subscriptions/";
             string accessToken;
+            string baseUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}";
             try
             {
-
                 // Get an access token.
-                accessToken = await AuthHelper.GetAccessTokenAsync();
+                accessToken = await AuthHelper.GetAccessTokenAsync(baseUrl);
             }
             catch (Exception e)
             {
@@ -49,8 +49,9 @@ namespace GraphWebhooks.Controllers
                 Resource = "me/mailFolders('Inbox')/messages",
                 ChangeType = "created",
                 NotificationUrl = ConfigurationManager.AppSettings["ida:NotificationUrl"],
-                ClientState = Guid.NewGuid().ToString(),
-                //ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 4230, 0) // current maximum timespan for messages
+                // Include baseUrl as part of state (so we can use this in the notification
+                // to get an access token)
+                ClientState = $"{Guid.NewGuid().ToString()}+{baseUrl}",
                 ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 15, 0) // shorter duration useful for testing
             };
 
@@ -97,9 +98,9 @@ namespace GraphWebhooks.Controllers
             string accessToken;
             try
             {
-
+                string baseUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}";
                 // Get an access token.
-                accessToken = await AuthHelper.GetAccessTokenAsync();
+                accessToken = await AuthHelper.GetAccessTokenAsync(baseUrl);
             }
             catch (Exception e)
             {
@@ -126,7 +127,7 @@ namespace GraphWebhooks.Controllers
         public string BuildErrorMessage(Exception e)
         {
             string message = e.Message;
-            if (e is AdalSilentTokenAcquisitionException) message = "Unable to get an access token. You may need to sign in again.";
+            if (e is MsalUiRequiredException) message = "Unable to get an access token. You may need to sign in again.";
             return message;
         }
     }

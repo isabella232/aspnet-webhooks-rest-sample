@@ -1,9 +1,12 @@
 ﻿using Microsoft.Owin;
+using Microsoft.Owin.Extensions;
 using Owin;
 using System;
 using System.Net;
+using System.Web;
+using System.Web.SessionState;
 
-[assembly: OwinStartupAttribute(typeof(GraphWebhooks.Startup))]
+[assembly: OwinStartup(typeof(GraphWebhooks.Startup))]
 
 namespace GraphWebhooks
 {
