@@ -6,10 +6,9 @@
 using GraphWebhooks.Helpers;
 using GraphWebhooks.Models;
 using Microsoft.Identity.Client;
-using Newtonsoft.Json;
+using Microsoft.Graph;
 using System;
 using System.Configuration;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -18,7 +17,6 @@ namespace GraphWebhooks.Controllers
 {
     public class SubscriptionController : Controller
     {
-
         public ActionResult Index()
         {
             return View();
@@ -28,23 +26,12 @@ namespace GraphWebhooks.Controllers
         [Authorize]
         public async Task<ActionResult> CreateSubscription()
         {
-            string subscriptionsEndpoint = "https://graph.microsoft.com/v1.0/subscriptions/";
-            string accessToken;
             string baseUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}";
-            try
-            {
-                // Get an access token.
-                accessToken = await AuthHelper.GetAccessTokenAsync(baseUrl);
-            }
-            catch (Exception e)
-            {
-                ViewBag.Message = BuildErrorMessage(e);
-                return View("Error", e);
-            }
+            string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
 
-            // This sample subscribes to get notifications when the user receives an email.
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, subscriptionsEndpoint);
-            Subscription subscription = new Subscription
+            var graphClient = GraphHelper.GetAuthenticatedClient(userObjectId, baseUrl);
+
+            var subscription = new Subscription
             {
                 Resource = "me/mailFolders('Inbox')/messages",
                 ChangeType = "created",
@@ -55,37 +42,31 @@ namespace GraphWebhooks.Controllers
                 ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 15, 0) // shorter duration useful for testing
             };
 
-            string contentString = JsonConvert.SerializeObject(subscription, 
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            request.Content = new StringContent(contentString, System.Text.Encoding.UTF8, "application/json");
-
-            // Send the `POST subscriptions` request and parse the response.
-            GraphHttpClient graphHttpClient = new GraphHttpClient(accessToken);
-            HttpResponseMessage response = await graphHttpClient.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                string stringResult = await response.Content.ReadAsStringAsync();
+                var newSubscription = await graphClient.Subscriptions.Request().AddAsync(subscription);
+
                 SubscriptionViewModel viewModel = new SubscriptionViewModel
                 {
-                    Subscription = JsonConvert.DeserializeObject<Subscription>(stringResult)
+                    Subscription = newSubscription
                 };
 
                 // This sample temporarily stores the current subscription ID, client state, user object ID, and tenant ID. 
                 // This info is required so the NotificationController, which is not authenticated, can retrieve an access token from the cache and validate the subscription.
                 // Production apps typically use some method of persistent storage.
-                SubscriptionStore.SaveSubscriptionInfo(viewModel.Subscription.Id,
-                    viewModel.Subscription.ClientState,
+                SubscriptionStore.SaveSubscriptionInfo(newSubscription.Id,
+                    newSubscription.ClientState,
                     ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value,
                     ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value);
 
                 // This sample just saves the current subscription ID to the session so we can delete it later.
-                Session["SubscriptionId"] = viewModel.Subscription.Id;
+                Session["SubscriptionId"] = newSubscription.Id;
                 return View("Subscription", viewModel);
             }
-            else
+            catch (Exception ex)
             {
-                return RedirectToAction("Index", "Error", new { message = response.StatusCode, debug = await response.Content.ReadAsStringAsync() });
+                ViewBag.Message = BuildErrorMessage(ex);
+                return View("Error", ex);
             }
         }
 
@@ -93,35 +74,23 @@ namespace GraphWebhooks.Controllers
         [Authorize]
         public async Task<ActionResult> DeleteSubscription()
         {
-            string subscriptionsEndpoint = "https://graph.microsoft.com/v1.0/subscriptions/";
             string subscriptionId = (string)Session["SubscriptionId"];
-            string accessToken;
+            string baseUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}";
+            string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+
+            var graphClient = GraphHelper.GetAuthenticatedClient(userObjectId, baseUrl);
+
             try
             {
-                string baseUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}";
-                // Get an access token.
-                accessToken = await AuthHelper.GetAccessTokenAsync(baseUrl);
+                await graphClient.Subscriptions[subscriptionId].Request().DeleteAsync();
+                Session.Remove("SubscriptionId");
+                return RedirectToAction("SignOut", "Account");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                ViewBag.Message = BuildErrorMessage(e);
-                return View("Error", e);
+                ViewBag.Message = BuildErrorMessage(ex);
+                return View("Error", ex);
             }
-
-            if (!string.IsNullOrEmpty(subscriptionId))
-            {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, subscriptionsEndpoint + subscriptionId);
-
-                // Send the `DELETE subscriptions/id` request.
-                GraphHttpClient graphHttpClient = new GraphHttpClient(accessToken);
-                HttpResponseMessage response = await graphHttpClient.SendAsync(request);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index", "Error", new { message = response.StatusCode, debug = response.Content.ReadAsStringAsync() });
-                }
-            }
-            return RedirectToAction("SignOut", "Account");
         }
 
         public string BuildErrorMessage(Exception e)

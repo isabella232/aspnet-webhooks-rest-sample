@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -65,7 +64,6 @@ namespace GraphWebhooks.Controllers
                                 {
                                     if (current.ClientState == subscription.ClientState)
                                     {
-
                                         // Just keep the latest notification for each resource.
                                         // No point pulling data more than once.
                                         notifications[current.Resource] = current;
@@ -84,7 +82,6 @@ namespace GraphWebhooks.Controllers
                 }
                 catch (Exception)
                 {
-
                     // TODO: Handle the exception.
                     // Still return a 202 so the service doesn't resend the notification.
                 }
@@ -97,42 +94,27 @@ namespace GraphWebhooks.Controllers
         public async Task GetChangedMessagesAsync(IEnumerable<Notification> notifications)
         {
             List<MessageViewModel> messages = new List<MessageViewModel>();
-            string serviceRootUrl = "https://graph.microsoft.com/v1.0/";
+
             foreach (var notification in notifications)
             {
-                SubscriptionStore subscription = SubscriptionStore.GetSubscriptionInfo(notification.SubscriptionId);
-                string accessToken;
-                try
-                {
-                    // Extract base URL from client state to use as redirect
-                    // url for token request
-                    string baseUrl = notification.ClientState.Split('+')[1];
-                    // Get the access token for the subscribed user.
-                    accessToken = await AuthHelper.GetAccessTokenForSubscriptionAsync(subscription.UserId, baseUrl);
-                }
-                catch (Exception e)
-                {
-                    throw e;
-                }
+                var subscription = SubscriptionStore.GetSubscriptionInfo(notification.SubscriptionId);
 
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, serviceRootUrl + notification.Resource);
+                // Extract base URL from client state to use as redirect
+                // url for token request
+                string baseUrl = notification.ClientState.Split('+')[1];
 
-                // Send the 'GET' request.
-                GraphHttpClient graphHttpClient = new GraphHttpClient(accessToken);
-                HttpResponseMessage response = await graphHttpClient.SendAsync(request);
+                var graphClient = GraphHelper.GetAuthenticatedClient(subscription.UserId, baseUrl);
 
-                // Get the messages from the JSON response.
-                if (response.IsSuccessStatusCode)
-                {
-                    string stringResult = await response.Content.ReadAsStringAsync();
-                    string type = notification.ResourceData.ODataType;
-                    if (type == "#Microsoft.Graph.Message")
-                    {
-                        Message message = JsonConvert.DeserializeObject<Message>(stringResult);
-                        MessageViewModel messageViewModel = new MessageViewModel(message, subscription.UserId);
-                        messages.Add(messageViewModel);
-                    }
-                }
+                // Get the message
+                var message = await graphClient.Me.Messages[notification.ResourceData.Id].Request()
+                    .Select("id,subject,bodyPreview,createdDateTime,isRead,conversationId,changeKey")
+                    .GetAsync();
+
+                // Clear the additional data from Graph (purely for display purposes)
+                message.AdditionalData.Clear();
+
+                MessageViewModel messageViewModel = new MessageViewModel(message, subscription.UserId);
+                messages.Add(messageViewModel);
             }
             if (messages.Count > 0)
             {

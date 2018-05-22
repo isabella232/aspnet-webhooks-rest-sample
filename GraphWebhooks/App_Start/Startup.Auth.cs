@@ -14,7 +14,6 @@ using System;
 using System.Configuration;
 using System.IdentityModel.Tokens;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace GraphWebhooks
 {
