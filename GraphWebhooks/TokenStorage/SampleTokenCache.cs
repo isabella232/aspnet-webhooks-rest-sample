@@ -6,7 +6,6 @@
 using Microsoft.Identity.Client;
 using System.Runtime.Caching;
 using System.Threading;
-using System.Web;
 
 namespace GraphWebhooks.TokenStorage
 {

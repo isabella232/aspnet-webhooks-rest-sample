@@ -56,8 +56,7 @@ namespace GraphWebhooks.Controllers
                 // Production apps typically use some method of persistent storage.
                 SubscriptionStore.SaveSubscriptionInfo(newSubscription.Id,
                     newSubscription.ClientState,
-                    ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value,
-                    ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value);
+                    ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value);
 
                 // This sample just saves the current subscription ID to the session so we can delete it later.
                 Session["SubscriptionId"] = newSubscription.Id;
