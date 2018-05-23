@@ -10,25 +10,29 @@
 
 @section Scripts {
     <script src="https://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.1.min.js"></script>
-    <script src="/signalr/hubs"></script>
     <script>
         var connection = $.hubConnection();
         var hub = connection.createHubProxy("NotificationHub");
         hub.on("showNotification", function (messages) {
             $.each(messages, function (index, current) {                       // Iterate through the message collection
                 if (current.SubscribedUser === '@CurrentUser'.toString()) {    // Don't show messages for different users
-                    var table = $("<table></table>");
-                    var header = $("<th>Message</th>").appendTo(table);
+                    var card = $("<div class=\"card\"></div>");
+                    var cardBody = $("<div class=\"card-body\"></div>").appendTo(card);
+                    $("<h5 class=\"\"></h5>").text("Message created").appendTo(cardBody);
+                    var table = $("<table class=\"table table-sm\"></table>");
+                    
                     var message = current.Message;
                     for (prop in message) {                                    // Iterate through message properties
                         var property = message[prop];
                         var row = $("<tr></tr>");
 
-                        $("<td></td>").text(prop).appendTo(row);
-                        $("<td></td>").text(property).appendTo(row);
+                        $("<th scope=\"row\"></th>").text(prop).appendTo(row);
+                        var valueCol = $("<td></td>").appendTo(row);
+                        $("<code></code>").text(property).appendTo(valueCol);
                         table.append(row);
                     }
-                    $("#message").append(table);
+                    cardBody.append(table);
+                    $("#message").append(card);
                     $("#message").append("<br />");
                 }
             });
@@ -44,7 +48,7 @@
 <div>
     @using (Html.BeginForm("DeleteSubscription", "Subscription"))
     {
-        <button type="submit">Delete subscription and sign out</button>
+        <button type="submit" class="btn btn-primary">Delete subscription and sign out</button>
     }
 </div>
 

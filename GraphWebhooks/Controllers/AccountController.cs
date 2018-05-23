@@ -3,14 +3,13 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
- using System.Web;
-using System.Web.Mvc;
+using GraphWebhooks.TokenStorage;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
-using Microsoft.Owin.Security;
 using System.Security.Claims;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using GraphWebhooks.TokenStorage;
+using System.Web;
+using System.Web.Mvc;
 
 namespace GraphWebhooks.Controllers
 {
@@ -31,13 +30,10 @@ namespace GraphWebhooks.Controllers
         public void SignOut()
         {
             string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-            string tenantId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
-            string authority = $"{ Startup.AadInstance }/{ tenantId }";
 
-            AuthenticationContext authContext = new AuthenticationContext(
-                authority,
-                new SampleTokenCache(userObjectId));
-            authContext.TokenCache.Clear();
+            var tokenCache = new SampleTokenCache(userObjectId);
+            tokenCache.Clear();
+
             HttpContext.GetOwinContext().Authentication.SignOut(
                 OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
         }

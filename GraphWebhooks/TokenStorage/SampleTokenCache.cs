@@ -3,76 +3,86 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using System.Web;
-using System.Web.Caching;
+using Microsoft.Identity.Client;
+using System.Runtime.Caching;
+using System.Threading;
 
 namespace GraphWebhooks.TokenStorage
 {
 
     // This sample uses the runtime cache. Production apps will typically use some method of persistent storage.
-    // For more information, see http://www.cloudidentity.com/blog/2014/07/09/the-new-token-cache-in-adal-v2/
-    public class SampleTokenCache : TokenCache
+    // Adapted from https://github.com/Azure-Samples/active-directory-dotnet-webapp-openidconnect-v2
+    public class SampleTokenCache
     {
-        private static readonly object FileLock = new object();
-        string UserObjectId = string.Empty;
-        string CacheId = string.Empty;
-        Cache Cache;
+        private static ReaderWriterLockSlim sessionLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+        private string userId = string.Empty;
+        private string cacheId = string.Empty;
+        private static ObjectCache cache = MemoryCache.Default;
+        private static CacheItemPolicy defaultPolicy = new CacheItemPolicy();
+
+        TokenCache tokenCache = new TokenCache();
 
         public SampleTokenCache(string userId)
         {
-            UserObjectId = userId;
-            CacheId = UserObjectId + "_TokenCache";
-            Cache = HttpRuntime.Cache;
-            this.AfterAccess = AfterAccessNotification;
-            this.BeforeAccess = BeforeAccessNotification;
+            this.userId = userId;
+            cacheId = userId + "_TokenCache";
             Load();
         }
 
-        public void Load()
+        public TokenCache GetMsalCacheInstance()
         {
-            lock (FileLock)
+            tokenCache.SetBeforeAccess(BeforeAccessNotification);
+            tokenCache.SetAfterAccess(AfterAccessNotification);
+            Load();
+            return tokenCache;
+        }
+
+        public bool HasData()
+        {
+            return (cache[cacheId] != null && ((byte[])cache[cacheId]).Length > 0);
+        }
+
+        public void Clear()
+        {
+            cache.Remove(cacheId);
+        }
+
+        private void Load()
+        {
+            sessionLock.EnterReadLock();
+            var item = cache.GetCacheItem(cacheId);
+            if (item != null)
             {
-                this.Deserialize(Cache.Get(CacheId) as byte[]);
+                tokenCache.Deserialize((byte[])item.Value);
             }
+            sessionLock.ExitReadLock();
         }
 
-        public void Persist()
+        private void Persist()
         {
-            lock (FileLock)
-            {
-                // reflect changes in the persistent store
-                Cache.Insert(CacheId, this.Serialize());
-                // once the write operation took place, restore the HasStateChanged bit to false
-                this.HasStateChanged = false;
-            }
+            sessionLock.EnterWriteLock();
+
+            // Optimistically set HasStateChanged to false. 
+            // We need to do it early to avoid losing changes made by a concurrent thread.
+            tokenCache.HasStateChanged = false;
+
+            cache.Set(new CacheItem(cacheId, tokenCache.Serialize()), defaultPolicy);
+            
+            sessionLock.ExitWriteLock();
         }
 
-        // Empties the persistent store.
-        public override void Clear()
+        // Triggered right before MSAL needs to access the cache. 
+        private void BeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-            base.Clear();
-            Cache.Remove(CacheId);
-        }
-
-        public override void DeleteItem(TokenCacheItem item)
-        {
-            base.DeleteItem(item);
-            Persist();
-        }
-
-        // Triggered right before ADAL needs to access the cache.
-        // Reload the cache from the persistent store in case it changed since the last access.
-        void BeforeAccessNotification(TokenCacheNotificationArgs args)
-        {
+            // Reload the cache from the persistent store in case it changed since the last access. 
             Load();
         }
 
-        // Triggered right after ADAL accessed the cache.
-        void AfterAccessNotification(TokenCacheNotificationArgs args)
+        // Triggered right after MSAL accessed the cache.
+        private void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
             // if the access operation resulted in a cache update
-            if (this.HasStateChanged)
+            if (tokenCache.HasStateChanged)
             {
                 Persist();
             }
