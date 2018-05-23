@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Runtime.Caching;
 using System.Timers;
-using System.Web;
 
 namespace GraphWebhooks.Helpers
 {
     public class SubscriptionCache
     {
         static SubscriptionCache cache = null;
+
+        private static ObjectCache objCache = MemoryCache.Default;
+        private static CacheItemPolicy defaultPolicy = new CacheItemPolicy();
 
         Timer timer;
         private SubscriptionCache()
@@ -19,7 +21,7 @@ namespace GraphWebhooks.Helpers
             };
             renewalTimer.Elapsed += OnRenewal;
             renewalTimer.Start();
-            this.timer = renewalTimer;
+            timer = renewalTimer;
         }
 
         public static SubscriptionCache GetSubscriptionCache()
@@ -36,7 +38,7 @@ namespace GraphWebhooks.Helpers
 
         private async void OnRenewal(object sender, ElapsedEventArgs e)
         {
-            Dictionary<string, SubscriptionDetails> subscriptionstore = HttpRuntime.Cache.Get("subscription_store") as Dictionary<string, SubscriptionDetails>;
+            var subscriptionstore = objCache.Get("subscription_store") as Dictionary<string, SubscriptionDetails>;
 
             foreach (var item in subscriptionstore)
             {
@@ -53,38 +55,35 @@ namespace GraphWebhooks.Helpers
 
             timer.Start();
         }
-        
 
         // This sample temporarily stores the current subscription ID, client state, user object ID, and tenant ID. 
         // This info is required so the NotificationController can retrieve an access token from the cache and validate the subscription.
         // Production apps typically use some method of persistent storage.
         public void SaveSubscriptionInfo(SubscriptionDetails subscriptionDetails)
         {
-            if (HttpRuntime.Cache["subscription_store"] == null)
+            if (objCache["subscription_store"] == null)
             {
-                Dictionary<string, SubscriptionDetails> subscriptionstore = new Dictionary<string, SubscriptionDetails>();
+                var subscriptionstore = new Dictionary<string, SubscriptionDetails>();
                 subscriptionstore.Add(subscriptionDetails.SubscriptionId, subscriptionDetails);
-                HttpRuntime.Cache.Add("subscription_store",
-                    subscriptionstore,
-                    null, DateTime.MaxValue, new TimeSpan(24, 0, 0), System.Web.Caching.CacheItemPriority.NotRemovable, null);
+
+                objCache.Set(new CacheItem("subscription_store", subscriptionstore), defaultPolicy);
             }
             else
             {
-                Dictionary<string, SubscriptionDetails> subscriptionstore = HttpRuntime.Cache.Get("subscription_store") as Dictionary<string, SubscriptionDetails>;
+                var subscriptionstore = objCache.Get("subscription_store") as Dictionary<string, SubscriptionDetails>;
                 subscriptionstore.Add(subscriptionDetails.SubscriptionId, subscriptionDetails);
             }
         }
 
         public SubscriptionDetails GetSubscriptionInfo(string subscriptionId)
         {
-            Dictionary<string, SubscriptionDetails> subscriptionstore = HttpRuntime.Cache.Get("subscription_store") as Dictionary<string, SubscriptionDetails>;
+            var subscriptionstore = objCache.Get("subscription_store") as Dictionary<string, SubscriptionDetails>;
             return subscriptionstore[subscriptionId];
         }
 
         public Dictionary<string, SubscriptionDetails> DeleteAllSubscriptions()
         {
-            return HttpRuntime.Cache.Remove("subscription_store") as Dictionary<string, SubscriptionDetails>;
-
+            return objCache.Remove("subscription_store") as Dictionary<string, SubscriptionDetails>;
         }
     }
 }

@@ -7,7 +7,6 @@ using GraphWebhooks.Helpers;
 using GraphWebhooks.Models;
 using Microsoft.Identity.Client;
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
