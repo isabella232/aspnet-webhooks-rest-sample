@@ -12,45 +12,45 @@
 {
     <p>The following subscription was successfully created.</p>
     <div>
-        <table>
+        <table class="table table-sm">
             <tr>
+                <th scope="row">
+                    @Html.LabelFor(m => m.Subscription.Resource)
+                </th>
                 <td>
-                    @Html.LabelFor(m => m.Subscription.Resource, htmlAttributes: new { @class = "control-label col-md-2" })
-                </td>
-                <td>
-                    @Model.Subscription.Resource
+                    <code>@Model.Subscription.Resource</code>
                 </td>
             </tr>
             <tr>
+                <th scope="row">
+                    @Html.LabelFor(m => m.Subscription.ChangeType)
+                </th>
                 <td>
-                    @Html.LabelFor(m => m.Subscription.ChangeType, htmlAttributes: new { @class = "control-label col-md-2" })
-                </td>
-                <td>
-                    @Model.Subscription.ChangeType
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Subscription.ClientState, htmlAttributes: new { @class = "control-label col-md-2" })
-                </td>
-                <td>
-                    @Model.Subscription.ClientState
+                    <code>@Model.Subscription.ChangeType</code>
                 </td>
             </tr>
             <tr>
+                <th scope="row">
+                    @Html.LabelFor(m => m.Subscription.ClientState)
+                </th>
                 <td>
-                    @Html.LabelFor(m => m.Subscription.Id, htmlAttributes: new { @class = "control-label col-md-2" })
-                </td>
-                <td>
-                    @Model.Subscription.Id
+                    <code>@Model.Subscription.ClientState</code>
                 </td>
             </tr>
             <tr>
+                <th scope="row">
+                    @Html.LabelFor(m => m.Subscription.Id)
+                </th>
                 <td>
-                    @Html.LabelFor(m => m.Subscription.ExpirationDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <code>@Model.Subscription.Id</code>
                 </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    @Html.LabelFor(m => m.Subscription.ExpirationDateTime)
+                </th>
                 <td>
-                    @Model.Subscription.ExpirationDateTime
+                    <code>@Model.Subscription.ExpirationDateTime</code>
                 </td>
             </tr>
         </table>
@@ -61,7 +61,7 @@
     <p>Choose <b>Watch for notifications</b> and then send an email to your user. The <b>Notifications</b> page will display metadata for new messages.</p>
     @using (Html.BeginForm("LoadView", "Notification"))
     {
-        <button type="submit">Watch for notifications</button>
+        <button type="submit" class="btn btn-primary">Watch for notifications</button>
     }
 </div>
 

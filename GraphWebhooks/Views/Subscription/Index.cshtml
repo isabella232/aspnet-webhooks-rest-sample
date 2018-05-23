@@ -10,15 +10,16 @@
 
 <div>
     <p>You can subscribe to webhooks for specific resources (such as messages, events, and drive root items) to get notified about changes to the resource.</p>
-    <p>This sample creates a subscription for the <i>me/mailFolders('Inbox')/messages</i> resource and the <i>created</i> change type. The request body looks like this:</p>
-    <pre>
-    {
-        "resource": "me/mailFolders('Inbox')/messages",
-        "changeType": "created",
-        "notificationUrl": "https://your-notification-endpoint",
-        "clientState": "your-client-state",
-        "expirationDateTime": "2017-03-14T03:13:29.4232606+00:00"
-    }</pre>
+    <p>This sample creates a subscription for the <code>me/mailFolders('Inbox')/messages</code> resource and the <code>created</code> change type. The request body looks like this:</p>
+    <div class="code-block">
+        <pre><code>{
+    "resource": "me/mailFolders('Inbox')/messages",
+    "changeType": "created",
+    "notificationUrl": "https://your-notification-endpoint",
+    "clientState": "your-client-state",
+    "expirationDateTime": "2017-03-14T03:13:29.4232606+00:00"
+}</code></pre>
+    </div>
     <p>See the <a href="https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/resources/webhooks" target="_blank">docs</a> for other supported resources and change types.</p>
     <br />
     @if (!isAuthenticated)
@@ -30,7 +31,7 @@
         <p>Choose <b>Create subscription</b> to create a subscription for the current user.</p>
         using (Html.BeginForm("CreateSubscription", "Subscription"))
         {
-            <button type="submit">Create subscription</button>
+            <button type="submit" class="btn btn-primary">Create subscription</button>
         }
     }
 </div>

@@ -3,18 +3,16 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
+using GraphWebhooks.Helpers;
 using GraphWebhooks.Models;
 using GraphWebhooks.SignalR;
-using GraphWebhooks.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace GraphWebhooks.Controllers
 {
@@ -58,15 +56,14 @@ namespace GraphWebhooks.Controllers
                             {
                                 Notification current = JsonConvert.DeserializeObject<Notification>(notification.ToString());
 
-                                // Check client state to verify the message is from Microsoft Graph. 
-                                SubscriptionDetails subscription = SubscriptionCache.GetSubscriptionCache().GetSubscriptionInfo(current.SubscriptionId);
+                                // Check client state to verify the message is from Microsoft Graph.
+                                var subscription = SubscriptionCache.GetSubscriptionCache().GetSubscriptionInfo(current.SubscriptionId);
 
                                 // This sample only works with subscriptions that are still cached.
                                 if (subscription != null)
                                 {
                                     if (current.ClientState == subscription.ClientState)
                                     {
-
                                         // Just keep the latest notification for each resource.
                                         // No point pulling data more than once.
                                         notifications[current.Resource] = current;
@@ -77,7 +74,7 @@ namespace GraphWebhooks.Controllers
                             if (notifications.Count > 0)
                             {
 
-                                // Query for the changed messages. 
+                                // Query for the changed messages.
                                 await GetChangedMessagesAsync(notifications.Values);
                             }
                         }
@@ -85,7 +82,6 @@ namespace GraphWebhooks.Controllers
                 }
                 catch (Exception)
                 {
-
                     // TODO: Handle the exception.
                     // Still return a 202 so the service doesn't resend the notification.
                 }
@@ -98,42 +94,23 @@ namespace GraphWebhooks.Controllers
         public async Task GetChangedMessagesAsync(IEnumerable<Notification> notifications)
         {
             List<MessageViewModel> messages = new List<MessageViewModel>();
-            string serviceRootUrl = "https://graph.microsoft.com/v1.0/";
+
             foreach (var notification in notifications)
             {
                 SubscriptionDetails subscription = SubscriptionCache.GetSubscriptionCache().GetSubscriptionInfo(notification.SubscriptionId);
-                string accessToken;
-                try
-                {
 
-                    // Get the access token for the subscribed user.
-                    accessToken = await AuthHelper.GetAccessTokenForSubscriptionAsync(subscription.UserId, subscription.TenantId);
-                }
-                catch (Exception e)
-                {
-                    throw e;
-                }
+                var graphClient = GraphHelper.GetAuthenticatedClient(subscription.UserId, subscription.RedirectUrl);
 
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, serviceRootUrl + notification.Resource);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                // Get the message
+                var message = await graphClient.Me.Messages[notification.ResourceData.Id].Request()
+                    .Select("id,subject,bodyPreview,createdDateTime,isRead,conversationId,changeKey")
+                    .GetAsync();
 
-                // Send the 'GET' request.
-                HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(continueOnCapturedContext: false);
+                // Clear the additional data from Graph (purely for display purposes)
+                message.AdditionalData.Clear();
 
-                // Get the messages from the JSON response.
-                if (response.IsSuccessStatusCode)
-                {
-                    string stringResult = await response.Content.ReadAsStringAsync();
-                    string type = notification.ResourceData.ODataType;
-                    if (type == "#Microsoft.Graph.Message")
-                    {
-                        Message message = JsonConvert.DeserializeObject<Message>(stringResult);
-                        MessageViewModel messageViewModel = new MessageViewModel(message, subscription.UserId);
-                        messages.Add(messageViewModel);
-                    }
-                }
+                MessageViewModel messageViewModel = new MessageViewModel(message, subscription.UserId);
+                messages.Add(messageViewModel);
             }
             if (messages.Count > 0)
             {

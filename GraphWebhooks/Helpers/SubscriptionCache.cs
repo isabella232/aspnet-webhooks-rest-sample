@@ -1,13 +1,5 @@
-﻿using GraphWebhooks.Models;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Web;
 
@@ -48,14 +40,14 @@ namespace GraphWebhooks.Helpers
 
             foreach (var item in subscriptionstore)
             {
-                var response = await SubscriptionHelper.CheckSubscription(item.Key);
-                if (response.IsSuccessStatusCode)
+                var response = await SubscriptionHelper.CheckSubscription(item.Key, item.Value.UserId, item.Value.RedirectUrl);
+                if (response != null)
                 {
-                    await SubscriptionHelper.RenewSubscription(item.Key as string);
+                    await SubscriptionHelper.RenewSubscription(item.Key, item.Value.UserId, item.Value.RedirectUrl);
                 }
                 else
                 {
-                    await SubscriptionHelper.CreateSubscription();
+                    await SubscriptionHelper.CreateSubscription(item.Value.UserId, item.Value.RedirectUrl);
                 }
             }
 

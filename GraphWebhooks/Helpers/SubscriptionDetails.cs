@@ -3,9 +3,6 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
-using System;
-using System.Web;
-
 namespace GraphWebhooks.Helpers
 {
     public class SubscriptionDetails
@@ -13,14 +10,14 @@ namespace GraphWebhooks.Helpers
         public string SubscriptionId { get; set; }
         public string ClientState { get; set; }
         public string UserId { get; set; }
-        public string TenantId { get; set; }
+        public string RedirectUrl { get; set; }
 
-        internal SubscriptionDetails(string subscriptionId, string clientState, string userId, string tenantId)
+        internal SubscriptionDetails(string subscriptionId, string clientState, string userId, string redirectUrl)
         {
             SubscriptionId = subscriptionId;
             ClientState = clientState;
             UserId = userId;
-            TenantId = tenantId;
+            RedirectUrl = redirectUrl;
         }
     }
 }

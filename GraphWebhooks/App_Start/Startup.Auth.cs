@@ -3,16 +3,17 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
- using System;
-using System.Configuration;
-using System.Threading.Tasks;
-using System.Web;
+using GraphWebhooks.TokenStorage;
+using Microsoft.Identity.Client;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.Notifications;
 using Microsoft.Owin.Security.OpenIdConnect;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Owin;
-using GraphWebhooks.TokenStorage;
+using System;
+using System.Configuration;
+using System.IdentityModel.Tokens;
+using System.Threading.Tasks;
 
 namespace GraphWebhooks
 {
@@ -21,21 +22,24 @@ namespace GraphWebhooks
         public static string ClientId = ConfigurationManager.AppSettings["ida:ClientId"];
         public static string ClientSecret = ConfigurationManager.AppSettings["ida:ClientSecret"];
         public static string AadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
-        public static string GraphResourceId = ConfigurationManager.AppSettings["ida:ResourceId"];
+        public static string[] Scopes = ConfigurationManager.AppSettings["ida:AppScopes"]
+          .Replace(' ', ',').Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
         public void ConfigureAuth(IAppBuilder app)
         {
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions { });
+            app.UseCookieAuthentication(new CookieAuthenticationOptions());
 
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
                     ClientId = ClientId,
-                    Authority = $"{ AadInstance }/common",
-                    TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
+                    Authority = $"{ AadInstance }/common/v2.0",
+                    Scope = "openid offline_access profile email " + string.Join(" ", Scopes),
+                    TokenValidationParameters = new TokenValidationParameters
                     {
+                        NameClaimType = "name",
                         // instead of using the default validation (validating against a single issuer value, as we do in line of business apps), 
                         // we inject our own multitenant validation logic
                         ValidateIssuer = false,
@@ -45,27 +49,7 @@ namespace GraphWebhooks
                     },
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
-                        AuthorizationCodeReceived = (context) =>
-                        {
-
-                            // If there is a code in the OpenID Connect response, redeem it for an access token and store it away.
-                            var code = context.Code;
-                            string userObjectId = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-                            string tenantId = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
-                            string authority = $"{ AadInstance }/{ tenantId }";
-
-                            AuthenticationContext authContext = new AuthenticationContext(
-                                authority, 
-                                new SampleTokenCache(userObjectId));
-
-                            authContext.AcquireTokenByAuthorizationCodeAsync(
-                                code, 
-                                new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)),
-                                new ClientCredential(ClientId, ClientSecret), 
-                                GraphResourceId);
-
-                            return Task.FromResult(0);
-                        },
+                        AuthorizationCodeReceived = OnAuthorizationCodeReceived,
                         RedirectToIdentityProvider = (context) =>
                         {
                             // This ensures that the address used for sign in and sign out is picked up dynamically from the request.
@@ -89,6 +73,28 @@ namespace GraphWebhooks
                         }
                     }
                 });
+        }
+
+        private async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedNotification context)
+        {
+            // If there is a code in the OpenID Connect response, redeem it for an access token and store it away.
+            var code = context.Code;
+            string userObjectId = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+
+            SampleTokenCache tokenCache = new SampleTokenCache(userObjectId);
+
+            var cca = new ConfidentialClientApplication(ClientId, context.Request.Uri.ToString(), 
+                new ClientCredential(ClientSecret), tokenCache.GetMsalCacheInstance(), null);
+
+            try
+            {
+                var result = await cca.AcquireTokenByAuthorizationCodeAsync(code, Scopes);
+            }
+            catch (MsalException ex)
+            {
+                context.HandleResponse();
+                context.Response.Redirect($"/error/index?message={ex.Message}");
+            }
         }
     }
 }

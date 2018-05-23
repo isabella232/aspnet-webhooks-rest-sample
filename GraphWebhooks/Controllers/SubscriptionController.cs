@@ -3,24 +3,18 @@
  *  See LICENSE in the source repository root for complete license information.
  */
 
-using System;
-using System.Web.Mvc;
-using GraphWebhooks.Models;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Newtonsoft.Json;
-using System.Configuration;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using GraphWebhooks.Helpers;
+using GraphWebhooks.Models;
+using Microsoft.Identity.Client;
+using System;
 using System.Security.Claims;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace GraphWebhooks.Controllers
 {
     public class SubscriptionController : Controller
     {
-
         public ActionResult Index()
         {
             return View();
@@ -30,54 +24,53 @@ namespace GraphWebhooks.Controllers
         [Authorize]
         public async Task<ActionResult> CreateSubscription()
         {
-            HttpResponseMessage response;
+            string baseUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}";
+
             try
             {
-                response = await SubscriptionHelper.CreateSubscription();
+                var subscription = await SubscriptionHelper.CreateSubscription(baseUrl);
+
+                SubscriptionViewModel viewModel = new SubscriptionViewModel()
+                {
+                    Subscription = subscription
+                };
+
+                return View("Subscription", viewModel);
             }
             catch (Exception e)
             {
                 ViewBag.Message = BuildErrorMessage(e);
                 return View("Error", e);
             }
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return RedirectToAction("Index", "Error", new { message = response.StatusCode, debug = await response.Content.ReadAsStringAsync() });
-            }
-
-            string stringResult = await response.Content.ReadAsStringAsync();
-            SubscriptionViewModel viewModel = new SubscriptionViewModel()
-            {
-                Subscription = JsonConvert.DeserializeObject<Subscription>(stringResult)
-            };
-
-            return View("Subscription", viewModel);
         }
 
         // Delete the current webhooks subscription and sign out the user.
         [Authorize]
         public async Task<ActionResult> DeleteSubscription()
         {
+            string baseUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}";
             var subscriptions = SubscriptionCache.GetSubscriptionCache().DeleteAllSubscriptions();
 
-            foreach (var subscription in subscriptions)
+            try
             {
-                HttpResponseMessage response = await SubscriptionHelper.DeleteSubscription(subscription.Key);
-
-                if (!response.IsSuccessStatusCode)
+                foreach (var subscription in subscriptions)
                 {
-                    return RedirectToAction("Index", "Error", new { message = response.StatusCode, debug = response.Content.ReadAsStringAsync() });
+                    await SubscriptionHelper.DeleteSubscription(subscription.Key, baseUrl);
                 }
-            }
 
-            return RedirectToAction("SignOut", "Account");
+                return RedirectToAction("SignOut", "Account");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = BuildErrorMessage(ex);
+                return View("Error", ex);
+            }
         }
 
         public string BuildErrorMessage(Exception e)
         {
             string message = e.Message;
-            if (e is AdalSilentTokenAcquisitionException) message = "Unable to get an access token. You may need to sign in again.";
+            if (e is MsalUiRequiredException) message = "Unable to get an access token. You may need to sign in again.";
             return message;
         }
     }
