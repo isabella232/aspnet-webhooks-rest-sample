@@ -56,8 +56,8 @@ namespace GraphWebhooks.Controllers
                             {
                                 Notification current = JsonConvert.DeserializeObject<Notification>(notification.ToString());
 
-                                // Check client state to verify the message is from Microsoft Graph. 
-                                SubscriptionStore subscription = SubscriptionStore.GetSubscriptionInfo(current.SubscriptionId);
+                                // Check client state to verify the message is from Microsoft Graph.
+                                var subscription = SubscriptionCache.GetSubscriptionCache().GetSubscriptionInfo(current.SubscriptionId);
 
                                 // This sample only works with subscriptions that are still cached.
                                 if (subscription != null)
@@ -70,11 +70,11 @@ namespace GraphWebhooks.Controllers
                                     }
                                 }
                             }
-                            
+
                             if (notifications.Count > 0)
                             {
 
-                                // Query for the changed messages. 
+                                // Query for the changed messages.
                                 await GetChangedMessagesAsync(notifications.Values);
                             }
                         }
@@ -97,13 +97,9 @@ namespace GraphWebhooks.Controllers
 
             foreach (var notification in notifications)
             {
-                var subscription = SubscriptionStore.GetSubscriptionInfo(notification.SubscriptionId);
+                SubscriptionDetails subscription = SubscriptionCache.GetSubscriptionCache().GetSubscriptionInfo(notification.SubscriptionId);
 
-                // Extract base URL from client state to use as redirect
-                // url for token request
-                string baseUrl = notification.ClientState.Split('+')[1];
-
-                var graphClient = GraphHelper.GetAuthenticatedClient(subscription.UserId, baseUrl);
+                var graphClient = GraphHelper.GetAuthenticatedClient(subscription.UserId, subscription.RedirectUrl);
 
                 // Get the message
                 var message = await graphClient.Me.Messages[notification.ResourceData.Id].Request()

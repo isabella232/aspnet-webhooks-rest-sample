@@ -6,10 +6,7 @@
 using GraphWebhooks.Helpers;
 using GraphWebhooks.Models;
 using Microsoft.Identity.Client;
-using Microsoft.Graph;
 using System;
-using System.Configuration;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -27,45 +24,22 @@ namespace GraphWebhooks.Controllers
         public async Task<ActionResult> CreateSubscription()
         {
             string baseUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}";
-            string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-
-            var graphClient = GraphHelper.GetAuthenticatedClient(userObjectId, baseUrl);
-
-            var subscription = new Subscription
-            {
-                Resource = "me/mailFolders('Inbox')/messages",
-                ChangeType = "created",
-                NotificationUrl = ConfigurationManager.AppSettings["ida:NotificationUrl"],
-                // Include baseUrl as part of state (so we can use this in the notification
-                // to get an access token)
-                ClientState = $"{Guid.NewGuid().ToString()}+{baseUrl}",
-                ExpirationDateTime = DateTime.UtcNow + new TimeSpan(0, 0, 15, 0) // shorter duration useful for testing
-            };
 
             try
             {
-                var newSubscription = await graphClient.Subscriptions.Request().AddAsync(subscription);
+                var subscription = await SubscriptionHelper.CreateSubscription(baseUrl);
 
-                SubscriptionViewModel viewModel = new SubscriptionViewModel
+                SubscriptionViewModel viewModel = new SubscriptionViewModel()
                 {
-                    Subscription = newSubscription
+                    Subscription = subscription
                 };
 
-                // This sample temporarily stores the current subscription ID, client state, user object ID, and tenant ID. 
-                // This info is required so the NotificationController, which is not authenticated, can retrieve an access token from the cache and validate the subscription.
-                // Production apps typically use some method of persistent storage.
-                SubscriptionStore.SaveSubscriptionInfo(newSubscription.Id,
-                    newSubscription.ClientState,
-                    ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value);
-
-                // This sample just saves the current subscription ID to the session so we can delete it later.
-                Session["SubscriptionId"] = newSubscription.Id;
                 return View("Subscription", viewModel);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                ViewBag.Message = BuildErrorMessage(ex);
-                return View("Error", ex);
+                ViewBag.Message = BuildErrorMessage(e);
+                return View("Error", e);
             }
         }
 
@@ -73,16 +47,16 @@ namespace GraphWebhooks.Controllers
         [Authorize]
         public async Task<ActionResult> DeleteSubscription()
         {
-            string subscriptionId = (string)Session["SubscriptionId"];
             string baseUrl = $"{Request.Url.Scheme}://{Request.Url.Authority}";
-            string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-
-            var graphClient = GraphHelper.GetAuthenticatedClient(userObjectId, baseUrl);
+            var subscriptions = SubscriptionCache.GetSubscriptionCache().DeleteAllSubscriptions();
 
             try
             {
-                await graphClient.Subscriptions[subscriptionId].Request().DeleteAsync();
-                Session.Remove("SubscriptionId");
+                foreach (var subscription in subscriptions)
+                {
+                    await SubscriptionHelper.DeleteSubscription(subscription.Key, baseUrl);
+                }
+
                 return RedirectToAction("SignOut", "Account");
             }
             catch (Exception ex)
