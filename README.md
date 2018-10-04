@@ -29,7 +29,7 @@ To use the Microsoft Graph ASP.NET Webhooks sample, you need the following:
 - Visual Studio 2017 installed on your development computer.
 - A [work or school account](http://dev.office.com/devprogram).
 - The application ID and key from the application that you [register on the Application Registration Portal](#register-the-app).
-- A public HTTPS endpoint to receive and send HTTP requests. You can host this on Microsoft Azure or another service, or you can [use ngrok](#ngrok) or a similar tool while testing.
+- A public HTTPS endpoint to receive and send HTTP requests. You can host this on Microsoft Azure or another service, or you can [use ngrok](#set-up-the-ngrok-proxy-optional) or a similar tool while testing.
 
 ### Register the app
 
@@ -78,7 +78,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 ## Configure and run the sample
 
-1. Expose a public HTTPS notification endpoint. It can run on a service such as Microsoft Azure, or you can create a proxy web server by [using ngrok](#ngrok) or a similar tool.
+1. Expose a public HTTPS notification endpoint. It can run on a service such as Microsoft Azure, or you can create a proxy web server by [using ngrok](#set-up-the-ngrok-proxy-optional) or a similar tool.
 
 1. Make a copy of **GraphWebHooks/PrivateSettings.example.config** in the same directory. Name the copy **PrivateSettings.config**.
 
