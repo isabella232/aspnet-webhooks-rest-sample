@@ -40,7 +40,7 @@ In this exercise, you will create a new Azure AD web application registration us
 
 1. Open a browser and navigate to the [Azure Active Directory admin center](https://aad.portal.azure.com). Login using a **Work or School Account**.
 
-1. Select **Azure Active Directory** in the left-hand navigation, then select **App registrations (Preview)** under **Manage**.
+1. Select **Azure Active Directory** in the left-hand navigation, then select **App registrations** under **Manage**.
 
     ![A screenshot of the App registrations ](readme-images/aad-portal-app-registrations.png)
 
@@ -70,18 +70,6 @@ In this exercise, you will create a new Azure AD web application registration us
     > This client secret is never shown again, so make sure you copy it now.
 
     ![A screenshot of the newly added client secret](readme-images/aad-copy-client-secret.png)
-
-1. From the **Manage** page, select **API permissions** > **Add a permission**.
-
-    ![A screenshot of Select API Permissions](readme-images/aad-api-permissions.PNG)
-
-1. Choose **Microsoft API** > **Microsoft Graph**.
-
-    ![A screenshot of Request API permissions](readme-images/aad-request-api-permissions.PNG)
-
-1. Choose **Delegated permissions**. In the search box, type **Mail.Read** and select the first option from the list. Select **Add permissions**.
-
-    ![A screenshot of Delegated permissions](readme-images/aad-delegated-permissions.PNG)
 
 
 ### Set up the ngrok proxy (optional)
@@ -120,7 +108,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 1. Expose a public HTTPS notification endpoint. It can run on a service such as Microsoft Azure, or you can create a proxy web server by [using ngrok](#set-up-the-ngrok-proxy-optional) or a similar tool.
 
-1. Make a copy of **GraphWebHooks/PrivateSettings.example.config** in the same directory. Name the copy **PrivateSettings.config**.
+1. Make a copy of **GraphWebHooks/PrivateSettings.example.config** in the same directory. Rename the copy **PrivateSettings.config**.
 
 1. Open **GraphWebhooks.sln** in the sample files.
 
