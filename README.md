@@ -108,7 +108,7 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 1. Expose a public HTTPS notification endpoint. It can run on a service such as Microsoft Azure, or you can create a proxy web server by [using ngrok](#set-up-the-ngrok-proxy-optional) or a similar tool.
 
-1. Make a copy of **GraphWebHooks/PrivateSettings.example.config** in the same directory. Name the copy **PrivateSettings.config**.
+1. Make a copy of **GraphWebHooks/PrivateSettings.example.config** in the same directory. Rename the copy **PrivateSettings.config**.
 
 1. Open **GraphWebhooks.sln** in the sample files.
 
