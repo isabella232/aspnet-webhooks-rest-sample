@@ -1,5 +1,6 @@
 ---
-page_type: sample 
+page_type: sample
+description: "This ASP.NET MVC sample shows how to start getting notifications from Microsoft Graph."
 products:
 - office-365
 languages:
