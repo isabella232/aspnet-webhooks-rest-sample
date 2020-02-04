@@ -166,32 +166,6 @@ See [Hosting without a tunnel](https://github.com/microsoftgraph/nodejs-webhooks
 
 1. Choose the **Delete subscription and sign out** button.
 
-## Key components of the sample
-
-### Controllers
-
-- [`NotificationController.cs`](GraphWebhooks/Controllers/NotificationController.cs) Receives notifications.
-- [`SubscriptionController.cs`](GraphWebhooks/Controllers/SubscriptionController.cs) Creates and receives webhook subscriptions.
-
-### Models
-
-- [`Message.cs`](GraphWebhooks/Models/Message.cs) Defines the **MessageViewModel** that represents the data displayed in the Notification view.
-- [`Notification.cs`](GraphWebhooks/Models/Notification.cs) Represents a change notification.
-- [`Subscription.cs`](GraphWebhooks/Models/Subscription.cs) Defines the **SubscriptionViewModel** that represents the data displayed in the Subscription view.
-
-### Views
-
-- [`Notification/Notification.cshtml`](GraphWebhooks/Views/Notification/Notification.cshtml) Displays information about received messages, and contains the **Delete subscription and sign out** button.
-- [`Subscription/Index.cshtml`](GraphWebhooks/Views/Subscription/Index.cshtml) Landing page that contains the **Create subscription** button.
-- [`Subscription/Subscription.cshtml`](GraphWebhooks/Views/Subscription/Subscription.cshtml) Displays subscription properties, and contains the **Watch for notifications** button.
-
-### Other
-
-- [`Web.config`](GraphWebhooks/Web.config) Contains values used for authentication and authorization.
-- [`App_Start/Startup.Auth.cs`](GraphWebhooks/App_Start/Startup.Auth.cs) Contains code used for authentication and authorization. The sample uses [OpenID Connect](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-openid-connect-code) and [Microsoft Authentication Library (MSAL)](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) to authenticate and authorize the user.
-- [`TokenStorage/SampleTokenCache.cs`](GraphWebhooks/TokenStorage/SampleTokenCache.cs) Sample implementation of a token cache that uses System.Runtime.Caching (so that token information is available when a notification is received). Production apps will typically use some method of persistent storage.
-- [`Helpers/SubscriptionStore.cs`](GraphWebhooks/Helpers/SubscriptionStore.cs) Access layer for stored subscription information. The sample implementation temporarily stores the info in HttpRuntime.Cache. Production apps will typically use some method of persistent storage.
-
 ## Troubleshooting
 
 If you run into errors or problems with the sample, see the [troubleshooting doc](TROUBLESHOOTING.md).
