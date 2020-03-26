@@ -1,19 +1,3 @@
----
-page_type: sample
-description: "This ASP.NET MVC sample shows how to start getting notifications from Microsoft Graph."
-products:
-- office-365
-languages:
-- javascript
-extensions:
-  contentType: samples
-  technologies:
-  - Mirosoft Graph
-  - Microsoft identity platform
-  platforms:
-  - REST API
-  createdDate: 3/9/2016 4:10:08 PM
----
 # Microsoft Graph ASP.NET Webhooks
 
 Subscribe for [Microsoft Graph webhooks](https://developer.microsoft.com/en-us/graph/docs/api-reference/v1.0/resources/webhooks) to be notified when your user's data changes so you don't have to poll for changes.
